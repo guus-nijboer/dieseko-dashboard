@@ -1,0 +1,2156 @@
+<!DOCTYPE html>
+<html lang="nl" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Marketing Dashboard — Dieseko Group</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ================= TOKENS ================= */
+:root[data-theme="dark"]{
+  --bg:#0E0E10; --surface:#151519; --surface-2:#1C1C21; --raise:#232329;
+  --line:#2A2A31; --line-soft:#212127;
+  --text:#F3F3F1; --text-2:#B4B4BC; --muted:#7C7C87; --muted-2:#57575F;
+  --pos:#5FB88F; --neg:#E05A54; --on-accent:#0E0E10;
+  --track:#2A2A31; --shadow:0 16px 44px rgba(0,0,0,.55);
+  --band:rgba(253,160,118,.16);
+}
+:root[data-theme="light"]{
+  --bg:#F3F3F1; --surface:#FFFFFF; --surface-2:#F7F7F5; --raise:#FFFFFF;
+  --line:#E3E3DE; --line-soft:#EDEDE9;
+  --text:#131316; --text-2:#4C4C55; --muted:#75757E; --muted-2:#A2A2AA;
+  --pos:#2E7D5B; --neg:#D6453F; --on-accent:#131316;
+  --track:#E8E8E4; --shadow:0 16px 44px rgba(20,20,25,.15);
+  --band:rgba(253,160,118,.24);
+}
+:root{
+  --coral:#FDA076; --coral-2:#F0997B; --teal:#26CBCA; --peri:#26CBCA;
+  --leaf:#7FD4C6; --amber:#F0997B;
+  --accent:#FDA076;
+  --rail:252px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{background:var(--bg);color:var(--text);
+  font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased;
+  transition:background .2s ease,color .2s ease}
+button,input,select{font:inherit;color:inherit}
+button{background:none;border:0;cursor:pointer}
+.mono{font-family:Inter,system-ui,sans-serif}
+.eyebrow{font-size:10px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--muted)}
+.shell{display:flex;min-height:100vh}
+
+/* ================= RAIL ================= */
+.rail{width:var(--rail);flex:0 0 var(--rail);background:var(--surface);
+  border-right:1px solid var(--line);display:flex;flex-direction:column;
+  position:sticky;top:0;height:100vh}
+.rail-top{padding:16px 16px 14px;border-bottom:1px solid var(--line)}
+.agency{display:flex;align-items:center;gap:9px;margin-bottom:14px}
+.agency-mark{width:24px;height:24px;border-radius:5px;
+  background:linear-gradient(135deg,var(--coral),var(--coral-2));
+  display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:13px;color:#0E0E10;letter-spacing:-.04em}
+.agency-name{font-weight:700;font-size:13px;letter-spacing:-.01em}
+.agency-name span{color:var(--muted);font-weight:400}
+.theme-btn{margin-left:auto;width:28px;height:28px;border-radius:6px;
+  border:1px solid var(--line);display:flex;align-items:center;justify-content:center;
+  color:var(--muted);transition:background .12s,color .12s,border-color .12s}
+.theme-btn:hover{background:var(--surface-2);color:var(--text);border-color:var(--muted-2)}
+.theme-btn:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.client-card{display:flex;align-items:center;gap:10px;padding:9px 11px;
+  border:1px solid var(--line);border-radius:6px;background:var(--surface-2)}
+.client-avatar{width:26px;height:26px;border-radius:5px;flex:0 0 26px;
+  display:flex;align-items:center;justify-content:center;font-weight:700;
+  font-size:11px;color:#0E0E10;letter-spacing:-.02em;background:var(--accent)}
+.client-nm{font-size:12.5px;font-weight:600;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.client-tag{font-family:Inter,system-ui,sans-serif;font-size:9px;color:var(--muted);letter-spacing:.06em;display:block}
+.rail-nav{flex:1;overflow-y:auto;padding:8px 0 16px}
+.nav-group{font-family:Inter,system-ui,sans-serif;font-size:9.5px;letter-spacing:.17em;
+  text-transform:uppercase;color:var(--muted-2);padding:14px 16px 6px}
+.nav-item{display:flex;align-items:center;gap:10px;width:100%;text-align:left;
+  padding:7px 16px;font-size:13px;color:var(--text-2);border-left:2px solid transparent;
+  transition:background .12s,color .12s}
+.nav-item:hover{background:var(--surface-2);color:var(--text)}
+.nav-item.is-active{background:var(--surface-2);border-left-color:var(--accent);color:var(--text);font-weight:600}
+.nav-item.is-addon{color:var(--muted)}
+.nav-item.is-addon .swatch{opacity:.55}
+.nav-item.is-addon:hover{color:var(--text)}
+.nav-item.is-addon.is-active{color:var(--text)}
+.nav-item.is-addon.is-active .swatch{opacity:1}
+.nav-item:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.swatch{width:7px;height:7px;border-radius:2px;flex:0 0 7px;background:var(--muted-2)}
+.nav-ico{flex:0 0 13px;margin-left:-3px;color:var(--muted)}
+.nav-item.is-active .nav-ico{color:var(--accent)}
+.rail-bottom{border-top:1px solid var(--line);padding:6px 0 8px;flex:0 0 auto}
+
+/* ================= TOPBAR ================= */
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.topbar{background:var(--surface);border-bottom:1px solid var(--line);padding:10px 22px;
+  min-height:56px;display:flex;align-items:center;gap:14px;
+  position:sticky;top:0;z-index:40}
+.crumb{font-size:13px;color:var(--muted)}
+.crumb b{color:var(--text);font-weight:600}
+.template-flag{margin-left:auto;display:flex;align-items:center;gap:7px;
+  font-family:Inter,system-ui,sans-serif;font-size:9.5px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--teal);border:1px solid rgba(38,203,202,.34);
+  background:rgba(38,203,202,.08);padding:4px 10px;border-radius:4px}
+
+/* ================= DATE PICKER ================= */
+.dp{position:relative}
+.dp-trigger{display:flex;align-items:center;gap:9px;padding:6px 11px 6px 7px;
+  border:1px solid var(--line);border-radius:20px;background:var(--surface-2);
+  transition:border-color .14s,background .14s}
+.dp-trigger:hover{border-color:var(--muted-2);background:var(--raise)}
+.dp-trigger:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.dp-chip{font-size:11.5px;font-weight:600;letter-spacing:.01em;padding:2px 9px;border-radius:12px;
+  background:var(--accent);color:var(--on-accent);white-space:nowrap}
+.dp-range{font-size:13px;color:var(--text);white-space:nowrap}
+.dp-cmp{font-family:Inter,system-ui,sans-serif;font-size:10px;color:var(--muted);white-space:nowrap}
+.dp-caret{color:var(--muted);font-size:10px}
+
+.dp-panel{position:absolute;top:calc(100% + 8px);right:0;z-index:80;display:none;
+  background:var(--raise);border:1px solid var(--line);border-radius:10px;
+  box-shadow:var(--shadow);overflow:hidden;width:592px}
+.dp-panel.open{display:flex}
+.dp-left{width:248px;flex:0 0 248px;border-right:1px solid var(--line);
+  display:flex;flex-direction:column;padding:8px 0}
+.dp-preset{display:block;width:100%;text-align:left;padding:9px 18px;font-size:13px;
+  color:var(--text-2);transition:background .1s,color .1s}
+.dp-preset:hover{background:var(--surface-2);color:var(--text)}
+.dp-preset.is-on{background:var(--band);color:var(--text);font-weight:600}
+.dp-preset:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+.dp-cmpbox{margin-top:auto;border-top:1px solid var(--line);padding:12px 18px 6px;
+  display:flex;flex-direction:column;gap:10px}
+.dp-cmprow{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:13px}
+.sw{width:36px;height:20px;border-radius:12px;background:var(--track);position:relative;
+  transition:background .16s;flex:0 0 36px}
+.sw::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;
+  background:var(--muted);transition:transform .16s,background .16s}
+.sw.on{background:var(--band)}
+.sw.on::after{transform:translateX(16px);background:var(--accent)}
+.sw:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.dp-cmpsel{width:100%;padding:6px 9px;border:1px solid var(--line);border-radius:5px;
+  background:var(--surface-2);font-size:12.5px}
+.dp-cmpsel:disabled{opacity:.4}
+
+.dp-right{flex:1;min-width:0;display:flex;flex-direction:column}
+.dp-fields{display:flex;align-items:flex-end;gap:10px;padding:16px 18px 12px}
+.dp-field{flex:1;min-width:0}
+.dp-field label{display:block;font-size:10.5px;color:var(--muted);margin-bottom:4px;
+  font-family:Inter,system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase}
+.dp-field input{width:100%;padding:7px 10px;border:1px solid var(--line);border-radius:5px;
+  background:var(--surface-2);font-size:13px;color:var(--text)}
+.dp-field input.active{border-color:var(--accent)}
+.dp-dash{color:var(--muted);padding-bottom:9px}
+.dp-dow{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;padding:0 18px 6px;
+  font-family:Inter,system-ui,sans-serif;font-size:10px;color:var(--muted);text-align:center}
+.dp-months{overflow-y:auto;max-height:268px;padding:0 18px 8px}
+.dp-mname{font-family:Inter,system-ui,sans-serif;font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);margin:12px 0 6px}
+.dp-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.dp-day{height:30px;display:flex;align-items:center;justify-content:center;
+  font-size:12.5px;color:var(--text-2);border-radius:4px;position:relative;
+  transition:background .1s,color .1s}
+.dp-day:hover:not(.off){background:var(--surface-2);color:var(--text)}
+.dp-day.mid{background:var(--band);border-radius:0;color:var(--text)}
+.dp-day.edge{background:var(--accent);color:var(--on-accent);font-weight:700}
+.dp-day.edge.s{border-radius:4px 0 0 4px}
+.dp-day.edge.e{border-radius:0 4px 4px 0}
+.dp-day.edge.s.e{border-radius:4px}
+.dp-day.off{color:var(--muted-2);cursor:default;opacity:.45}
+.dp-day.blank{cursor:default}
+.dp-foot{border-top:1px solid var(--line);padding:10px 18px;display:flex;
+  align-items:center;justify-content:flex-end;gap:6px}
+.dp-txt{padding:7px 14px;border-radius:5px;font-size:13px;font-weight:600;color:var(--accent);
+  transition:background .12s}
+.dp-txt:hover{background:var(--band)}
+.dp-txt.ghost{color:var(--muted)}
+.dp-txt.ghost:hover{background:var(--surface-2);color:var(--text)}
+.dp-txt:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+
+/* ================= PAGE ================= */
+.page{padding:20px 22px 34px;flex:1}
+.actionbar{display:flex;align-items:center;justify-content:flex-end;gap:8px;margin-bottom:14px}
+.geosel{padding:6px 10px;border:1px solid var(--line);border-radius:20px;background:var(--surface-2);
+  font-size:12.5px;color:var(--text);max-width:214px}
+.geosel:hover{border-color:var(--muted-2)}
+.geosel:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.lc{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px}
+.lc-card{background:var(--surface);border:1px solid var(--line);border-radius:8px;
+  padding:13px 14px 12px;position:relative;overflow:hidden}
+.lc-card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:var(--lc-c)}
+.lc-stage{font-size:10px;font-weight:600;letter-spacing:.13em;text-transform:uppercase;color:var(--lc-c)}
+.lc-val{font-size:22px;font-weight:800;letter-spacing:-.035em;margin-top:6px;font-variant-numeric:tabular-nums}
+.lc-sub{font-size:11.5px;color:var(--muted);margin-top:3px}
+.lc-foot{margin-top:8px}
+tr.sect td{background:var(--surface-2);font-weight:700;font-size:10.5px;letter-spacing:.12em;
+  text-transform:uppercase;padding-top:11px;padding-bottom:9px}
+@media (max-width:1080px){.lc{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:820px){.lc{grid-template-columns:1fr}}
+.btn{border:1px solid var(--line);background:var(--surface-2);padding:7px 13px;
+  font-size:12.5px;border-radius:5px;transition:background .12s,border-color .12s}
+.btn:hover{background:var(--raise);border-color:var(--muted-2)}
+.btn:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.btn-primary{background:var(--accent);color:var(--on-accent);border-color:var(--accent);font-weight:600}
+.btn-primary:hover{filter:brightness(1.07);background:var(--accent)}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.panel-head{padding:12px 16px 11px;border-bottom:1px solid var(--line-soft);
+  display:flex;align-items:baseline;justify-content:space-between;gap:14px}
+.panel-head h2{font-size:14px;font-weight:700;letter-spacing:-.01em;margin:0}
+.panel-body{padding:15px 16px 16px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.grid37{display:grid;grid-template-columns:1.6fr 1fr;gap:14px;margin-bottom:14px}
+.mb{margin-bottom:14px}
+
+/* ================= KPI ================= */
+.kpis{display:grid;gap:11px;margin-bottom:14px}
+.kpis.k7{grid-template-columns:repeat(7,1fr)}
+.kpis.k6{grid-template-columns:repeat(6,1fr)}
+.kpis.k5{grid-template-columns:repeat(5,1fr)}
+.mod-row{display:flex;align-items:flex-start;gap:14px;padding:14px 16px;border-bottom:1px solid var(--line-soft)}
+.mod-row:last-child{border-bottom:0}
+.mod-txt{flex:1;min-width:0}
+.mod-n{font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px}
+.mod-d{font-size:12.5px;color:var(--muted);margin-top:4px;max-width:70ch}
+.mod-need{font-family:Inter,system-ui,sans-serif;font-size:9.5px;letter-spacing:.06em;
+  color:var(--muted-2);margin-top:6px;text-transform:uppercase}
+.mod-sw{margin-top:2px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:8px;
+  padding:12px 13px 11px;position:relative;overflow:hidden}
+.kpi::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;
+  background:var(--kpi-c,var(--muted-2));opacity:.9}
+.kpi-label{font-family:Inter,system-ui,sans-serif;font-size:9.5px;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--muted);min-height:24px}
+.kpi-val{font-size:24px;font-feature-settings:"tnum" 1;font-weight:800;letter-spacing:-.035em;line-height:1.05;
+  margin-top:4px;font-variant-numeric:tabular-nums}
+.kpi-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:7px;min-height:18px}
+.delta{font-size:11.5px;font-weight:600;font-variant-numeric:tabular-nums;
+  display:inline-flex;align-items:center;gap:3px}
+.delta.up{color:var(--pos)} .delta.down{color:var(--neg)} .delta.flat{color:var(--muted)}
+.kpi-target{margin-top:9px}
+.kpi-track{height:4px;border-radius:2px;background:var(--track);overflow:hidden;position:relative}
+.kpi-track span{position:absolute;inset:0 auto 0 0;border-radius:2px;background:var(--kpi-c,var(--accent))}
+.kpi-track i{position:absolute;top:-2px;bottom:-2px;width:1px;background:var(--muted);opacity:.85}
+.kpi-tl{display:flex;justify-content:space-between;gap:8px;margin-top:5px;
+  font-family:Inter,system-ui,sans-serif;font-size:9.5px;color:var(--muted)}
+.pace-on{color:var(--pos)} .pace-off{color:var(--neg)}
+
+/* ================= FLOW ================= */
+.flow{width:100%;height:auto;display:block}
+.flow-stage{font-family:Inter,system-ui,sans-serif;font-size:9.5px;letter-spacing:.13em;fill:var(--muted)}
+.flow-total{font-size:15px;font-weight:800;letter-spacing:-.03em;fill:var(--text)}
+.flow-step{font-family:Inter,system-ui,sans-serif;font-size:9.5px;fill:var(--muted-2)}
+.ribbon{transition:opacity .16s}
+.flow.dim .ribbon{opacity:.14}
+.flow.dim .ribbon.hot{opacity:.78}
+.flow-legend{display:flex;flex-wrap:wrap;gap:6px 15px;margin-top:11px;padding-top:11px;
+  border-top:1px solid var(--line-soft)}
+.lg{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text-2);cursor:default}
+.lg i{width:9px;height:9px;border-radius:2px;display:block}
+.lg b{font-family:Inter,system-ui,sans-serif;font-weight:500;color:var(--muted);font-size:11px}
+
+/* ================= FUNNEL ================= */
+.fsteps{display:flex;flex-direction:column}
+.fstep{display:grid;grid-template-columns:150px 1fr 110px;gap:14px;align-items:center;padding:9px 0}
+.fstep-n{font-size:12.5px;font-weight:600}
+.fstep-n em{display:block;font-style:normal;font-family:Inter,system-ui,sans-serif;
+  font-size:9.5px;color:var(--muted);letter-spacing:.05em;margin-top:2px;text-transform:uppercase}
+.fstep-bar{height:26px;border-radius:4px;background:var(--track);overflow:hidden;position:relative}
+.fstep-bar span{position:absolute;inset:0 auto 0 0;border-radius:4px;opacity:.9}
+.fstep-v{text-align:right;font-family:Inter,system-ui,sans-serif;font-size:14px;font-weight:600;
+  font-variant-numeric:tabular-nums}
+.fdrop{display:grid;grid-template-columns:150px 1fr 110px;gap:14px}
+.fdrop-in{grid-column:2;font-family:Inter,system-ui,sans-serif;font-size:10px;color:var(--muted);
+  display:flex;align-items:center;gap:8px;padding-left:2px}
+.fdrop-in b{font-weight:600;color:var(--text-2)}
+.fdrop-in u{text-decoration:none;color:var(--neg)}
+
+/* ================= TABLE ================= */
+table.dt{width:100%;border-collapse:collapse}
+table.dt th{font-family:Inter,system-ui,sans-serif;font-size:9.5px;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--muted);font-weight:500;text-align:right;
+  padding:0 9px 9px;border-bottom:1px solid var(--line);white-space:nowrap}
+table.dt th:first-child{text-align:left;padding-left:0}
+table.dt th:last-child{padding-right:0}
+table.dt td{padding:8px 9px;border-bottom:1px solid var(--line-soft);text-align:right;
+  font-variant-numeric:tabular-nums;font-size:12.5px;color:var(--text-2)}
+table.dt td:first-child{text-align:left;padding-left:0;color:var(--text);font-weight:500}
+table.dt td:last-child{padding-right:0}
+table.dt tbody tr:last-child td{border-bottom:0}
+table.dt tbody tr:hover td{background:var(--surface-2)}
+.namecell{display:flex;align-items:center;gap:9px}
+.namecell i{width:7px;height:7px;border-radius:2px;flex:0 0 7px}
+.minibar{width:52px;height:4px;border-radius:2px;background:var(--track);position:relative;
+  overflow:hidden;flex:0 0 52px;display:inline-block;vertical-align:middle;margin-right:8px}
+.minibar span{position:absolute;inset:0 auto 0 0;border-radius:2px;background:var(--accent)}
+.tag{font-family:Inter,system-ui,sans-serif;font-size:9px;letter-spacing:.07em;
+  text-transform:uppercase;padding:2px 6px;border-radius:3px;border:1px solid var(--line);color:var(--muted)}
+.tag.brand{color:var(--peri);border-color:rgba(38,203,202,.4);background:rgba(38,203,202,.09)}
+.tag.gen{color:var(--teal);border-color:rgba(38,203,202,.4);background:rgba(38,203,202,.08)}
+.up-s{color:var(--pos)} .down-s{color:var(--neg)}
+
+.trend{width:100%;height:auto;display:block}
+.tr-axis{font-family:Inter,system-ui,sans-serif;font-size:9px;fill:var(--muted-2)}
+
+.bd{display:flex;flex-direction:column;gap:10px}
+.bd-lab{font-size:12.5px;color:var(--text-2);margin-bottom:5px;display:flex;justify-content:space-between;gap:10px}
+.bd-lab em{font-style:normal;font-family:Inter,system-ui,sans-serif;font-size:11px;color:var(--muted)}
+.bd-row{display:grid;grid-template-columns:1fr 58px;gap:11px;align-items:center}
+.bd-track{height:6px;border-radius:3px;background:var(--track);overflow:hidden}
+.bd-track span{display:block;height:100%;border-radius:3px;background:var(--accent)}
+.bd-val{font-family:Inter,system-ui,sans-serif;font-size:12px;text-align:right;color:var(--text)}
+
+.notes{display:flex;flex-direction:column}
+.note{display:flex;gap:11px;padding:11px 16px;border-bottom:1px solid var(--line-soft)}
+.note:last-child{border-bottom:0}
+.note-dot{width:7px;height:7px;border-radius:50%;margin-top:6px;flex:0 0 7px}
+.note-dot.warn{background:var(--amber)} .note-dot.bad{background:var(--neg)} .note-dot.good{background:var(--pos)}
+.note-t{font-size:12.5px;font-weight:600;line-height:1.35}
+.note-d{font-size:12px;color:var(--muted);margin-top:3px}
+
+.status{display:grid;grid-template-columns:repeat(3,1fr)}
+.st{padding:11px 16px;border-right:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft);
+  display:flex;gap:9px;align-items:flex-start}
+.st:nth-child(3n){border-right:0}
+.st-dot{width:7px;height:7px;border-radius:50%;margin-top:5px;flex:0 0 7px}
+.st-dot.live{background:var(--pos)} .st-dot.lag{background:var(--amber)} .st-dot.off{background:var(--muted-2)}
+.st-n{font-size:12.5px;font-weight:500}
+.st-t{font-family:Inter,system-ui,sans-serif;font-size:9.5px;color:var(--muted);margin-top:3px}
+
+.tin{width:112px;padding:6px 9px;border:1px solid var(--line);border-radius:5px;
+  background:var(--surface-2);font-family:Inter,system-ui,sans-serif;font-size:12.5px;
+  text-align:right;color:var(--text)}
+.tin:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
+.prog{height:6px;border-radius:3px;background:var(--track);overflow:hidden;position:relative;min-width:110px}
+.prog span{position:absolute;inset:0 auto 0 0;border-radius:3px;background:var(--accent)}
+.prog i{position:absolute;top:-3px;bottom:-3px;width:1px;background:var(--muted)}
+.pill{font-family:Inter,system-ui,sans-serif;font-size:9.5px;letter-spacing:.07em;
+  text-transform:uppercase;padding:3px 8px;border-radius:20px;white-space:nowrap}
+.pill.on{background:rgba(95,184,143,.14);color:var(--pos)}
+.pill.off{background:rgba(224,90,84,.14);color:var(--neg)}
+.pill.near{background:rgba(240,153,123,.16);color:var(--amber)}
+.footnote{margin-top:14px;font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:flex-start}
+
+@media (max-width:1460px){.kpis.k7{grid-template-columns:repeat(4,1fr)}}
+@media (max-width:1360px){.kpis.k7,.kpis.k6,.kpis.k5{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:1080px){
+  .grid2,.grid37{grid-template-columns:1fr}
+  .status{grid-template-columns:repeat(2,1fr)}
+  .st:nth-child(3n){border-right:1px solid var(--line-soft)}
+  .st:nth-child(2n){border-right:0}
+}
+@media (max-width:820px){
+  :root{--rail:0px}
+  .shell{flex-direction:column}
+  .rail{position:relative;width:100%;height:auto;flex:none;border-right:0;border-bottom:1px solid var(--line)}
+  .rail-nav{display:flex;overflow-x:auto;padding:8px}
+  .nav-group{display:none}
+  .rail-bottom{border-top:0;padding:0 8px 8px;display:flex;overflow-x:auto}
+  .nav-item{white-space:nowrap;border-left:0;border-bottom:2px solid transparent;padding:8px 12px}
+  .nav-item.is-active{border-left:0;border-bottom-color:var(--accent)}
+  .kpis.k7,.kpis.k6,.kpis.k5{grid-template-columns:repeat(2,1fr)}
+  .page{padding:14px}
+  .crumb{display:none}
+  .dp-panel{width:calc(100vw - 28px);flex-direction:column;right:auto;left:0}
+  .dp-left{width:100%;flex:none;border-right:0;border-bottom:1px solid var(--line);
+    max-height:180px;overflow-y:auto}
+  .fstep,.fdrop{grid-template-columns:104px 1fr 78px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+
+/* =====================================================================
+   DIESEKO GROUP — BRAND SYSTEM OVERRIDES
+   Applied as a visual layer only: data, content and interactions unchanged.
+   ===================================================================== */
+:root{
+  --dieseko-red:#DD1742;
+  --dieseko-red-dark:#B70F33;
+  --dieseko-ink:#111214;
+  --dieseko-charcoal:#1B1D20;
+  --dieseko-steel:#5E626A;
+  --dieseko-paper:#F4F4F2;
+  --dieseko-white:#FFFFFF;
+  --accent:var(--dieseko-red);
+  --rail:264px;
+}
+:root[data-theme="light"]{
+  --bg:#F2F2F0;
+  --surface:#FFFFFF;
+  --surface-2:#F7F7F5;
+  --raise:#FFFFFF;
+  --line:#DDDEDA;
+  --line-soft:#ECECE8;
+  --text:#111214;
+  --text-2:#45484E;
+  --muted:#777A80;
+  --muted-2:#A4A6AA;
+  --pos:#277A58;
+  --neg:#C52A3E;
+  --on-accent:#FFFFFF;
+  --track:#E7E7E3;
+  --shadow:0 18px 55px rgba(17,18,20,.11);
+  --band:rgba(221,23,66,.09);
+}
+:root[data-theme="dark"]{
+  --bg:#111214;
+  --surface:#191B1E;
+  --surface-2:#202226;
+  --raise:#26292D;
+  --line:#303338;
+  --line-soft:#26292D;
+  --text:#F7F7F5;
+  --text-2:#C3C5C8;
+  --muted:#8D9096;
+  --muted-2:#62656B;
+  --pos:#5AAA7F;
+  --neg:#ED6A77;
+  --on-accent:#FFFFFF;
+  --track:#303338;
+  --shadow:0 18px 55px rgba(0,0,0,.38);
+  --band:rgba(221,23,66,.14);
+}
+body{
+  letter-spacing:-.006em;
+  background:var(--bg);
+}
+
+/* Sidebar: industrial, fixed dark brand rail in both themes */
+.rail{
+  background:#151618 !important;
+  border-right:0;
+  box-shadow:1px 0 0 rgba(255,255,255,.055) inset;
+}
+.rail-top{
+  padding:22px 20px 18px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.agency{margin-bottom:18px;gap:11px}
+.agency-mark{
+  width:30px;height:30px;border-radius:0;
+  background:var(--dieseko-red) !important;
+  color:#fff;font-size:15px;font-weight:800;
+  box-shadow:none;
+}
+.agency-name{font-size:14px;color:#fff;font-weight:700;letter-spacing:.015em}
+.agency-name span{color:#92959A;font-weight:500}
+.theme-btn{
+  border:1px solid rgba(255,255,255,.12);
+  color:#AEB1B6;border-radius:0;background:transparent;
+}
+.theme-btn:hover{background:#222428;color:#fff;border-color:rgba(255,255,255,.22)}
+.client-card{
+  border:1px solid rgba(255,255,255,.09);
+  background:#1E2023;border-radius:0;padding:12px;
+}
+.client-avatar{border-radius:0;color:#fff;background:var(--dieseko-red)!important}
+.client-nm{color:#fff;font-size:13px}
+.client-tag{color:#8D9096;font-size:9px;margin-top:2px}
+.nav-group{color:#666A70;padding:20px 20px 7px;font-size:9px;font-weight:700}
+.nav-item{
+  padding:10px 20px;color:#A5A8AD;border-left:3px solid transparent;
+  font-size:13px;gap:11px;
+}
+.nav-item:hover{background:#1E2023;color:#fff}
+.nav-item.is-active{
+  background:#232529;color:#fff;border-left-color:var(--dieseko-red);font-weight:700;
+}
+.nav-item .swatch{width:5px;height:5px;border-radius:50%;background:#6B6E74!important;opacity:.65}
+.nav-item.is-active .swatch{background:var(--dieseko-red)!important;opacity:1}
+.nav-item.is-active .nav-ico{color:var(--dieseko-red)}
+.rail-bottom{border-top:1px solid rgba(255,255,255,.08)}
+
+/* Light-mode sidebar readability: the rail stays dark, so its text must not inherit light-theme muted tokens. */
+.rail .nav-item{color:#D5D7DA}
+.rail .nav-item .nav-ico{color:#9EA2A8}
+.rail .nav-item.is-addon{color:#BEC1C5}
+.rail .nav-item.is-addon .nav-ico{color:#92969C}
+.rail .nav-item:hover,
+.rail .nav-item.is-addon:hover{color:#FFFFFF}
+.rail .nav-item:hover .nav-ico,
+.rail .nav-item.is-addon:hover .nav-ico{color:#FFFFFF}
+.rail .nav-item.is-active,
+.rail .nav-item.is-addon.is-active{color:#FFFFFF}
+.rail .nav-item.is-active .nav-ico,
+.rail .nav-item.is-addon.is-active .nav-ico{color:var(--dieseko-red)}
+.rail .nav-group{color:#85898F}
+.rail .client-tag{color:#A3A6AB}
+
+/* Topbar: understated utility bar */
+.topbar{
+  min-height:68px;padding:12px 28px;background:rgba(255,255,255,.94);
+  border-bottom:1px solid var(--line);backdrop-filter:blur(12px);
+}
+:root[data-theme="dark"] .topbar{background:rgba(25,27,30,.94)}
+.crumb{font-size:12px;color:var(--muted);letter-spacing:.01em}
+.crumb b{font-size:13px;color:var(--text);font-weight:700}
+.template-flag{
+  color:var(--dieseko-red);border:0;background:rgba(221,23,66,.07);
+  border-radius:0;padding:6px 10px;font-weight:700;
+}
+.geosel,.dp-trigger{
+  border-radius:0;background:var(--surface);border:1px solid var(--line);
+  min-height:36px;
+}
+.dp-trigger{padding:5px 11px 5px 6px}
+.dp-chip{border-radius:0;background:#17181A;color:#fff;padding:4px 9px;font-weight:700}
+:root[data-theme="dark"] .dp-chip{background:var(--dieseko-red)}
+.dp-panel,.dp-cmpsel,.dp-field input{border-radius:0}
+.dp-preset.is-on{background:rgba(221,23,66,.08);box-shadow:3px 0 0 var(--dieseko-red) inset}
+.dp-day{border-radius:0}
+.dp-day.edge,.sw.on{background:var(--dieseko-red)}
+.dp-day.mid{background:rgba(221,23,66,.09)}
+
+/* Page rhythm: more editorial and spacious */
+.page{padding:30px 32px 50px;max-width:1680px;width:100%;margin:0 auto}
+.actionbar{margin-bottom:22px}
+.grid2,.grid37{gap:18px;margin-bottom:18px}
+.mb{margin-bottom:18px}
+
+/* Cards and panels: restrained, squared-off engineering aesthetic */
+.panel,.kpi,.lc-card{
+  border-radius:0;
+  background:var(--surface);
+  border:1px solid var(--line);
+  box-shadow:none;
+}
+.panel{overflow:hidden}
+.panel-head{
+  min-height:56px;padding:16px 20px 14px;
+  border-bottom:1px solid var(--line-soft);
+  align-items:center;
+}
+.panel-head h2{
+  font-size:15px;font-weight:750;letter-spacing:-.015em;
+}
+.panel-body{padding:20px}
+.eyebrow{font-size:9px;font-weight:800;letter-spacing:.15em;color:var(--muted);}
+
+/* KPI system: white/black/red rather than multicolour cards */
+.kpis{gap:12px;margin-bottom:18px}
+.kpi{padding:17px 17px 15px;min-height:126px}
+.kpi::before{height:3px;background:var(--dieseko-red)!important;opacity:1}
+.kpi-label{
+  font-size:9px;letter-spacing:.13em;font-weight:800;min-height:22px;color:var(--muted);
+}
+.kpi-val{
+  font-size:30px;line-height:1;font-weight:800;margin-top:9px;letter-spacing:-.045em;
+  color:var(--text);
+}
+.kpi-foot{margin-top:11px}
+.kpi-track{height:3px;border-radius:0}
+.kpi-track span{border-radius:0;background:var(--dieseko-red)!important}
+.kpi-target{margin-top:13px}
+.kpi-tl{font-size:9px;letter-spacing:.02em}
+
+/* Lifecycle cards use hierarchy rather than coloured tops */
+.lc{gap:12px;margin-bottom:18px}
+.lc-card{padding:17px;min-height:122px}
+.lc-card::before{height:3px;background:var(--dieseko-red)!important}
+.lc-stage{color:var(--muted)!important;font-weight:800}
+.lc-val{font-size:28px;margin-top:8px}
+.lc-sub{margin-top:5px}
+tr.sect td{color:var(--text)!important;background:var(--surface-2);border-left:3px solid var(--dieseko-red)}
+
+/* Buttons and form controls */
+.btn{border-radius:0;padding:8px 14px;font-weight:650}
+.btn-primary{
+  background:var(--dieseko-red);border-color:var(--dieseko-red);color:#fff;
+}
+.btn-primary:hover{background:var(--dieseko-red-dark);border-color:var(--dieseko-red-dark);filter:none}
+.tin,.pill,.tag{border-radius:0}
+.pill.on{background:rgba(39,122,88,.10)}
+.pill.off{background:rgba(197,42,62,.09)}
+.pill.near{background:rgba(221,23,66,.08);color:var(--dieseko-red)}
+
+/* Tables: cleaner and more editorial */
+table.dt th{
+  padding:0 10px 11px;font-size:9px;font-weight:800;letter-spacing:.12em;
+  border-bottom:1px solid var(--line);color:var(--muted);
+}
+table.dt td{padding:11px 10px;font-size:12.5px;border-bottom:1px solid var(--line-soft)}
+table.dt tbody tr:hover td{background:rgba(221,23,66,.025)}
+.minibar,.bd-track,.fstep-bar,.prog{border-radius:0}
+.minibar span,.bd-track span,.fstep-bar span,.prog span{border-radius:0}
+.bd-track span,.prog span{background:var(--dieseko-red)!important}
+
+/* Data visualisations: tone down decorative colour, preserve semantic deltas */
+.flow-legend{border-top-color:var(--line-soft)}
+.flow-stage{fill:var(--muted);font-weight:700}
+.flow-total{fill:var(--text);font-size:16px}
+.fstep-n{font-weight:700}
+.fstep-bar{height:24px}
+.fstep-bar span{filter:saturate(.72)}
+.note-dot.warn{background:var(--dieseko-red)}
+.status{background:var(--surface)}
+.st{padding:14px 18px}
+
+/* Focus state uses brand red consistently */
+button:focus-visible,select:focus-visible,input:focus-visible,.tin:focus{
+  outline:2px solid var(--dieseko-red)!important;outline-offset:2px;
+}
+
+@media (max-width:820px){
+  .rail{background:#151618!important}
+  .rail-top{padding:14px}
+  .page{padding:20px 14px 34px}
+  .topbar{padding:10px 14px}
+  .nav-item{border-left:0;border-bottom:3px solid transparent}
+  .nav-item.is-active{border-bottom-color:var(--dieseko-red);border-left:0}
+}
+
+</style>
+<style id="redesign-v2">
+/* ================================================================
+   REDESIGN V2 — calmer, more premium B2B dashboard
+   Content and application logic intentionally unchanged.
+   ================================================================ */
+:root[data-theme="dark"]{
+  --bg:#0b0d10; --surface:#111419; --surface-2:#171b21; --raise:#1d2229;
+  --line:#252b33; --line-soft:#1c2128;
+  --text:#f7f8fa; --text-2:#c0c7d0; --muted:#848e9a; --muted-2:#59636f;
+  --track:#242b33; --shadow:0 18px 50px rgba(0,0,0,.32);
+  --band:rgba(221,23,66,.12);
+}
+:root[data-theme="light"]{
+  --bg:#f4f6f8; --surface:#ffffff; --surface-2:#f7f9fb; --raise:#ffffff;
+  --line:#e4e8ed; --line-soft:#edf0f3;
+  --text:#12161c; --text-2:#4c5663; --muted:#7b8693; --muted-2:#a7afb8;
+  --track:#e9edf1; --shadow:0 18px 50px rgba(22,28,36,.10);
+  --band:rgba(221,23,66,.08);
+}
+:root{--rail:228px;--accent:#DD1742;--coral:#DD1742;--coral-2:#b80f35;--teal:#65c9c2;--peri:#72a8d8;--leaf:#7fd4c6;--amber:#e4a04f}
+body{font-size:13.5px;letter-spacing:-.005em;background:var(--bg)}
+.shell{background:var(--bg)}
+
+/* Sidebar */
+.rail{background:var(--surface);border-right:1px solid var(--line-soft);box-shadow:none}
+.rail-top{padding:20px 16px 16px;border-bottom:0}
+.agency{margin-bottom:18px;gap:10px}
+.agency-mark{width:28px;height:28px;border-radius:8px;background:var(--accent);color:#fff;font-size:12px;box-shadow:0 8px 20px rgba(221,23,66,.20)}
+.agency-name{font-size:13.5px;font-weight:700}.agency-name span{color:var(--muted);font-weight:500}
+.theme-btn{border:0;background:var(--surface-2);width:30px;height:30px;border-radius:8px}
+.client-card{padding:11px 12px;border:1px solid var(--line-soft);border-radius:10px;background:var(--surface-2)}
+.client-avatar{border-radius:7px;color:#fff;background:var(--accent)}
+.client-nm{font-size:12.5px}.client-tag{font-size:8.5px;letter-spacing:.08em;margin-top:1px}
+.rail-nav{padding:8px 10px 16px}
+.nav-group{padding:16px 10px 7px;font-size:8.5px;letter-spacing:.16em}
+.nav-item{border-left:0;border-radius:8px;padding:9px 10px;margin:2px 0;color:var(--muted);font-size:12.5px}
+.nav-item:hover{background:var(--surface-2);color:var(--text)}
+.nav-item.is-active{background:var(--band);border-left:0;color:var(--text);font-weight:600}
+.nav-item.is-active .nav-ico{color:var(--accent)}
+.nav-ico{margin-left:0}.swatch{border-radius:50%;width:6px;height:6px;flex-basis:6px}
+.rail-bottom{padding:8px 10px 12px;border-top:1px solid var(--line-soft)}
+
+/* Header */
+.topbar{min-height:68px;padding:12px 24px;background:color-mix(in srgb,var(--surface) 92%,transparent);border-bottom:1px solid var(--line-soft);backdrop-filter:blur(12px)}
+.crumb{font-size:12.5px}.crumb b{font-size:13.5px}
+.template-flag{font-size:8.5px;border-radius:20px;padding:5px 9px;color:var(--muted);border:1px solid var(--line);background:var(--surface-2)}
+.geosel,.dp-trigger{height:36px;border-radius:9px;background:var(--surface-2);border:1px solid var(--line-soft)}
+.dp-trigger{padding:6px 10px 6px 6px}.dp-chip{border-radius:7px;padding:4px 8px;color:#fff;background:var(--accent);font-size:10.5px}
+.dp-range{font-size:12.5px}.dp-cmp{font-size:9px}
+
+/* Main canvas */
+.page{padding:26px 28px 44px;max-width:1700px;width:100%;margin:0 auto}
+.actionbar{margin-bottom:18px}
+.btn{border-radius:8px;padding:8px 13px;background:var(--surface);border-color:var(--line)}
+.btn-primary{background:var(--accent);border-color:var(--accent);color:white}
+
+/* Cards and panels */
+.panel,.kpi,.lc-card{background:var(--surface);border:1px solid var(--line-soft);box-shadow:0 1px 0 rgba(255,255,255,.015)}
+.panel{border-radius:12px}.panel-head{padding:15px 18px 13px}.panel-head h2{font-size:13.5px}.panel-body{padding:18px}
+.grid2,.grid37{gap:16px;margin-bottom:16px}.mb{margin-bottom:16px}
+.kpis{gap:12px;margin-bottom:16px}
+.kpi{border-radius:11px;padding:15px 15px 14px;min-height:116px}
+.kpi::before{height:0}
+.kpi-label{font-size:9px;letter-spacing:.09em;min-height:20px;color:var(--muted)}
+.kpi-val{font-size:27px;margin-top:7px;letter-spacing:-.045em}
+.kpi-foot{margin-top:8px}.delta{font-size:10.5px}
+.kpi-target{margin-top:11px}.kpi-track{height:5px;border-radius:999px}.kpi-track span{border-radius:999px}
+.kpi-tl{font-size:8.5px;margin-top:6px}
+
+/* Lead cards */
+.lc{gap:12px;margin-bottom:16px}
+.lc-card{border-radius:11px;padding:15px 15px 14px}
+.lc-card::before{left:14px;right:auto;width:26px;height:3px;top:0;border-radius:0 0 3px 3px}
+.lc-stage{font-size:9px;letter-spacing:.1em;margin-top:3px}.lc-val{font-size:24px}.lc-sub{font-size:10.5px}
+
+/* Tables */
+table.dt th{font-size:8.5px;letter-spacing:.08em;padding-bottom:10px}
+table.dt td{padding:10px 9px;font-size:12px}
+table.dt tbody tr:hover td{background:var(--surface-2)}
+.tag{border-radius:999px;padding:3px 7px;font-size:8px}
+.minibar,.bd-track,.prog{border-radius:999px}.minibar span,.bd-track span,.prog span{border-radius:999px}
+
+/* Funnel / flow */
+.fstep{padding:11px 0}.fstep-bar{height:10px;border-radius:999px}.fstep-bar span{border-radius:999px}
+.fstep-v{font-size:13px}.fdrop-in{font-size:9.5px;padding-top:2px;padding-bottom:2px}
+.flow-legend{gap:8px 18px;margin-top:14px;padding-top:14px}.lg{font-size:11.5px}
+
+/* Notes and statuses */
+.note{padding:13px 18px}.note-t{font-size:12.5px}.note-d{font-size:11.5px;line-height:1.55}
+.status{gap:0}.st{padding:13px 16px}.st-n{font-size:12px}.st-t{font-size:8.5px}
+.pill{font-size:8.5px;padding:4px 8px}
+
+/* Date picker */
+.dp-panel{border-radius:14px;border-color:var(--line);box-shadow:var(--shadow)}
+.dp-preset{padding:9px 16px}.dp-preset.is-on{background:var(--band);color:var(--accent)}
+.dp-field input,.dp-cmpsel{border-radius:8px}
+.dp-day{border-radius:7px}.dp-day.edge{background:var(--accent);color:#fff}
+
+/* Responsive refinement */
+@media(max-width:1360px){:root{--rail:210px}.page{padding-left:22px;padding-right:22px}}
+@media(max-width:820px){.topbar{min-height:60px;padding:10px 14px}.page{padding:16px}.rail-top{padding:12px}.agency{margin-bottom:10px}.client-card{display:none}.rail-nav{padding:6px 8px}.nav-item{padding:8px 10px}.kpi{min-height:104px}}
+</style>
+
+
+<style id="dieseko-cleanup-v3">
+/* V3 cleanup: cleaner explanatory hierarchy + consistent dark client identity block */
+.rail .client-card{
+  background:transparent !important;
+  border:0 !important;
+  border-top:1px solid rgba(255,255,255,.09) !important;
+  border-radius:0 !important;
+  padding:14px 0 0 !important;
+  margin-top:4px;
+}
+.rail .client-avatar{
+  width:28px;height:28px;flex-basis:28px;
+  background:var(--dieseko-red,#DD1742) !important;
+  color:#fff !important;
+  border-radius:3px !important;
+}
+.rail .client-nm{color:#F7F7F5 !important;font-weight:650}
+.rail .client-tag{color:#9B9FA5 !important;line-height:1.45}
+:root[data-theme="light"] .rail .client-card,
+:root[data-theme="dark"] .rail .client-card{
+  background:transparent !important;
+  border-color:rgba(255,255,255,.09) !important;
+}
+</style>
+
+
+<style id="dieseko-fixes-v4">
+/* V4: sidebar interaction contrast + lifecycle section marker alignment */
+.rail{
+  background:#151618 !important;
+  border-right:1px solid #25272A !important;
+}
+.rail .nav-item{
+  background:transparent !important;
+  color:#D0D3D7 !important;
+}
+.rail .nav-item:hover,
+.rail .nav-item.is-addon:hover{
+  background:#24262A !important;
+  color:#FFFFFF !important;
+}
+.rail .nav-item.is-active,
+.rail .nav-item.is-addon.is-active{
+  background:rgba(221,23,66,.13) !important;
+  color:#FFFFFF !important;
+  box-shadow:inset 3px 0 0 var(--dieseko-red,#DD1742);
+}
+.rail .nav-item.is-active .swatch,
+.rail .nav-item.is-addon.is-active .swatch{
+  background:var(--dieseko-red,#DD1742) !important;
+  opacity:1 !important;
+}
+.rail .nav-group{color:#85898F !important}
+
+/* Lifecycle section labels: keep the red marker beside, not through, the label. */
+table.dt tr.sect td{
+  position:relative;
+  border-left:0 !important;
+  padding-left:18px !important;
+  color:var(--text) !important;
+}
+table.dt tr.sect td::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:7px;
+  bottom:7px;
+  width:3px;
+  background:var(--dieseko-red,#DD1742);
+}
+</style>
+
+</head>
+<body>
+<div class="shell">
+
+  <aside class="rail">
+    <div class="rail-top">
+      <div class="agency">
+        <div class="agency-mark">D</div>
+        <div class="agency-name">Dtch. <span>Digitals</span></div>
+        <button class="theme-btn" id="themeBtn" title="Wissel tussen licht en donker" aria-label="Wissel thema">
+          <svg width="15" height="15" viewBox="0 0 20 20" fill="none" id="themeIcon"></svg>
+        </button>
+      </div>
+      <div class="client-card">
+        <span class="client-avatar" id="cAv"></span>
+        <span style="min-width:0"><span class="client-nm" id="cNm"></span><span class="client-tag" id="cTg"></span></span>
+      </div>
+    </div>
+    <nav class="rail-nav" id="nav" aria-label="Dashboardpagina's"></nav>
+    <nav class="rail-bottom" id="navBottom" aria-label="Instellingen"></nav>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <div class="crumb" id="crumb"></div>
+
+      <select class="geosel" id="geoSel" aria-label="Land of regio" style="margin-left:auto"></select>
+      <div class="dp">
+        <button class="dp-trigger" id="dpTrigger" aria-haspopup="dialog" aria-expanded="false">
+          <span class="dp-chip" id="dpChip"></span>
+          <span class="dp-range" id="dpRange"></span>
+          <span class="dp-cmp" id="dpCmp"></span>
+          <span class="dp-caret">▾</span>
+        </button>
+        <div class="dp-panel" id="dpPanel" role="dialog" aria-label="Periode kiezen">
+          <div class="dp-left">
+            <div id="dpPresets"></div>
+            <div class="dp-cmpbox">
+              <div class="dp-cmprow">
+                <span>Vergelijken</span>
+                <button class="sw" id="dpSwitch" role="switch" aria-checked="true" aria-label="Vergelijken aan of uit"></button>
+              </div>
+              <select class="dp-cmpsel" id="dpCmpSel" aria-label="Vergelijkingsperiode">
+                <option value="prev">Vorige periode</option>
+                <option value="yoy">Zelfde periode vorig jaar</option>
+              </select>
+            </div>
+          </div>
+          <div class="dp-right">
+            <div class="dp-fields">
+              <div class="dp-field"><label for="dpF">Startdatum</label>
+                <input id="dpF" type="text" readonly></div>
+              <span class="dp-dash">–</span>
+              <div class="dp-field"><label for="dpT">Einddatum</label>
+                <input id="dpT" type="text" readonly></div>
+            </div>
+            <div class="dp-dow"><span>M</span><span>D</span><span>W</span><span>D</span><span>V</span><span>Z</span><span>Z</span></div>
+            <div class="dp-months" id="dpMonths"></div>
+            <div class="dp-foot">
+              <button class="dp-txt ghost" id="dpCancel">Annuleren</button>
+              <button class="dp-txt" id="dpApply">Toepassen</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="template-flag">Demodata</div>
+    </div>
+    <main class="page" id="page"></main>
+  </div>
+</div>
+
+<script>
+/* =====================================================================
+   ACTIVE CLIENT — swap this one line to switch the build
+   ===================================================================== */
+const ACTIVE_CLIENT = "dieseko";
+
+/* =====================================================================
+   CHANNEL LIBRARY
+   ===================================================================== */
+const CH = {
+  google:  {name:"Google Ads",       type:"paid",    color:"#DD1742", src:"Google Ads API"},
+  meta:    {name:"Meta Ads",         type:"paid",    color:"#26CBCA", src:"Meta Marketing API"},
+  linkedin:{name:"LinkedIn Ads",     type:"paid",    color:"#5FB8D9", src:"LinkedIn Ads API"},
+  tiktok:  {name:"TikTok Ads",       type:"paid",    color:"#E8837E", src:"TikTok Business API"},
+  pinterest:{name:"Pinterest Ads",   type:"paid",    color:"#C2624F", src:"Pinterest Ads API"},
+  seo:     {name:"Organisch zoeken", type:"organic", color:"#5E626A", src:"Search Console"},
+  email:   {name:"E-mail",           type:"email",   color:"#F0997B", src:"ESP / CRM"},
+  direct:  {name:"Direct & referral",type:"direct",  color:"#6E6E78", src:"GA4"}
+};
+
+/* =====================================================================
+   CLIENT CONFIG
+   ===================================================================== */
+const CLIENTS = {
+  nordwald:{
+    name:"Nordwald Interiors", tag:"E-COMMERCE · NL/DE", initial:"N",
+    accent:"#FDA076", goal:"ecom",
+    channels:["google","meta","pinterest","seo","email","direct"],
+    data:{
+      google:   {imp:2140000, clk:74800, ses:69300, cnv:1842, spend:38400, rev:412000},
+      meta:     {imp:3860000, clk:52100, ses:46900, cnv:764,  spend:19700, rev:148000},
+      pinterest:{imp:1720000, clk:22400, ses:20100, cnv:286,  spend:6800,  rev:57000},
+      seo:      {imp:1980000, clk:96400, ses:91200, cnv:2410, spend:0,     rev:498000},
+      email:    {imp:184000,  clk:21600, ses:20400, cnv:988,  spend:1400,  rev:196000},
+      direct:   {imp:0,       clk:41300, ses:39800, cnv:1176, spend:0,     rev:242000}
+    },
+    deltas:{prev:{ses:6.8,cnv:11.2,rev:14.6,cpa:-4.1,roas:9.3,cr:3.9},
+            yoy:{ses:19.4,cnv:24.8,rev:31.2,cpa:-11.7,roas:17.5,cr:5.2}},
+    margin:0.42,
+    targets:{ses:260000, cnv:7000, rev:1500000, roas:9.5, poas:3.8, cr:2.8, spend:70000},
+    queries:[
+      ["nordwald",.09,7.4,1.2,.3,"brand"],["eiken eettafel",.11,3.1,4.6,-1.4,"gen"],
+      ["design bank kopen",.08,2.4,6.8,.9,"gen"],["wandkast op maat",.07,3.8,3.9,-2.1,"gen"],
+      ["nordwald ervaringen",.03,6.1,1.8,0,"brand"],["scandinavisch interieur",.09,1.6,11.4,-3.2,"gen"],
+      ["massief houten tafel",.06,2.9,5.2,.4,"gen"],["boekenkast staal hout",.05,2.2,8.7,-1.1,"gen"],
+      ["esstisch eiche massiv",.10,1.9,9.3,-4.6,"gen"],["sideboard modern",.06,1.4,13.8,-2.4,"gen"]
+    ]
+  },
+  dieseko:{
+    name:"Dieseko Group", tag:"LEADGEN B2B · EU / US / APAC", initial:"D",
+    accent:"#DD1742", goal:"leads",
+    channels:["google","seo"],
+    data:{
+      google: {imp:524000, clk:16800, ses:15400, cnv:168, spend:24800, rev:0},
+      seo:    {imp:642000, clk:28400, ses:26900, cnv:246, spend:0,     rev:0}
+    },
+    deltas:{prev:{ses:4.6,cnv:8.2,rev:0,cpa:-3.4,roas:0,cr:3.1},
+            yoy:{ses:16.8,cnv:21.4,rev:0,cpa:-9.6,roas:0,cr:5.8}},
+    margin:0.28,
+    targets:{ses:46000, cnv:460, macro:275, mql:100, sql:42, deal:9, cpl:105, poas:1.9, cr:1.0, spend:26000},
+    lead:{mqlRate:.58, sqlRate:.41, dealRate:.22, dealValue:96000, cycleDays:118},
+    queries:[
+      ["dieseko",.05,10.2,1.0,0,"brand"],["vibratory hammer",.13,2.4,7.1,-2.8,"gen"],
+      ["trilblok heien",.09,3.6,4.2,-1.4,"gen"],["pve vibro hammer",.06,7.9,1.4,.2,"brand"],
+      ["sheet pile driving equipment",.12,1.8,10.6,-3.9,"gen"],["hydraulic power pack piling",.10,2.1,8.9,-2.2,"gen"],
+      ["ice vibratory hammer rental",.07,4.2,3.8,-1.1,"brand"],["woltman piling rig",.04,6.8,2.0,0,"brand"],
+      ["damwand trillen machine",.08,2.9,6.4,.7,"gen"],["pile driving rig for sale",.11,1.5,13.2,-4.6,"gen"]
+    ]
+  }
+};
+
+const GEO=[
+  {c:"NL",n:"Nederland",          r:"eu",s:.17,ci:1.28},
+  {c:"DE",n:"Duitsland",          r:"eu",s:.15,ci:1.06},
+  {c:"GB",n:"Verenigd Koninkrijk",r:"eu",s:.09,ci:.94},
+  {c:"FR",n:"Frankrijk",          r:"eu",s:.07,ci:.72},
+  {c:"PL",n:"Polen",              r:"eu",s:.06,ci:.61},
+  {c:"BE",n:"België",             r:"eu",s:.04,ci:1.11},
+  {c:"US",n:"Verenigde Staten",   r:"am",s:.16,ci:.88},
+  {c:"CA",n:"Canada",             r:"am",s:.04,ci:.79},
+  {c:"AU",n:"Australië",          r:"ap",s:.09,ci:1.02},
+  {c:"SG",n:"Singapore",          r:"ap",s:.05,ci:.83},
+  {c:"AE",n:"Ver. Arabische Emiraten",r:"ap",s:.04,ci:.68},
+  {c:"XX",n:"Overig",             r:"ot",s:.04,ci:.44}
+];
+const REGIONS={eu:"Europa",am:"Amerika",ap:"Azië-Pacific",ot:"Overig"};
+
+const DEVICES=[["Mobiel",.62],["Desktop",.32],["Tablet",.06]];
+
+const ORGANIC_PAGES={
+  ecom:[],
+  leads:[["Products — vibratory hammers",.19],["Rentals",.16],["Products — power packs",.13],
+         ["Expertises — foundations",.14],["Markets — offshore",.12],["Homepage",.14],["Contact & dealers",.12]]
+};
+
+/* Dieseko meet zeven conversies. Micro telt mee als signaal, macro als aanvraag.
+   Alleen de macro-conversies met crm:true landen automatisch in het CRM. */
+const CONVERSIONS=[
+  ["Request a quote",        .17,"macro",true ],
+  ["Contact formulier",      .13,"macro",true ],
+  ["Make an appointment",    .08,"macro",true ],
+  ["Tel click",              .12,"macro",false],
+  ["Email click",            .09,"macro",false],
+  ["Data sheet download",    .27,"micro",false],
+  ["Newsletter aanmelding",  .14,"micro",false]
+];
+const MACRO_SHARE=CONVERSIONS.filter(x=>x[2]==="macro").reduce((a,x)=>a+x[1],0);
+const CRM_SHARE  =CONVERSIONS.filter(x=>x[3]).reduce((a,x)=>a+x[1],0);
+
+const SITE_FORMS={
+  ecom:[],
+  leads:[["Request a quote",.26,.38],["Contact formulier",.21,.56],["Make an appointment",.14,.44],
+         ["Data sheet download",.25,.74],["Newsletter aanmelding",.14,.81]]
+};
+
+const COUPONS=[["WELKOM10",.34,.10],["ZOMER15",.26,.15],["NIEUWSBRIEF5",.21,.05],
+                ["LOYAAL20",.11,.20],["HERSTEL10",.08,.10]];
+const CUSTOMER_TYPE=[["Nieuwe klanten",.64],["Terugkerende klanten",.36]];
+
+const PAYMENTS=[["iDEAL",.46],["Creditcard",.19],["PayPal",.13],["Klarna achteraf",.14],["Bancontact",.08]];
+const SHIPPING=[["Standaard bezorging",.58],["Bezorgafspraak",.24],["Afhalen showroom",.11],["Express",.07]];
+const ORDER_STATUS=[["Betaald",.31],["In behandeling",.12],["Verzonden",.19],["Geleverd",.29],
+                    ["Geannuleerd",.03],["Retour",.06]];
+const SERVICES=[["Verhuur (rentals)",.29],["Onderdelen & service",.24],["Nieuwe machine",.21],
+                ["Revisie & upgrade",.15],["Training & inbedrijfstelling",.11]];
+
+const TARGET_EDITS = {};
+
+const ROWS = {
+  google:[["Brand — PVE / ICE / Woltman",.14],["Search — Vibratory hammers",.27],["Search — Rentals",.21],
+    ["Search — Power packs",.18],["Search — Generiek DE / FR",.20]],
+  meta:[["Prospecting — Broad",.34],["Retargeting — 30d",.26],["Catalogus — Dynamisch",.22],["Lookalike 1%",.18]],
+  linkedin:[["ABM — Contractors tier 1",.31],["Thought leadership — Offshore",.24],
+    ["Lead gen form — Brochure",.26],["Retargeting — Productpagina's",.19]],
+  tiktok:[["Spark Ads — Creator",.36],["Video Shopping",.27],["Prospecting — Broad",.22],["Retargeting",.15]],
+  pinterest:[["Shopping — Catalogus",.38],["Idea Pins — Inspiratie",.24],["Prospecting — Interesses",.23],["Retargeting",.15]],
+  seo:[["Productpagina's",.34],["Expertises & markets",.26],["Rentals",.22],["Homepage",.18]],
+  email:[["Nieuwsbrief — Kwartaal",.38],["Nurture — Na RFQ",.26],["Service reminder",.22],["Beursuitnodiging",.14]],
+  direct:[["Direct",.58],["Referral — Dealers",.27],["Referral — Vakmedia",.15]]
+};
+const BREAKDOWN = {
+  google:[["Search",.62],["Performance Max",.18],["Display & video",.13],["YouTube",.07]],
+  meta:[["Feed",.41],["Reels",.28],["Stories",.19],["Advantage+",.12]],
+  linkedin:[["Sponsored content",.48],["Lead gen forms",.31],["Message ads",.13],["Text ads",.08]],
+  tiktok:[["For You feed",.71],["Search",.16],["Profile",.08],["Overig",.05]],
+  pinterest:[["Home feed",.52],["Zoekresultaten",.31],["Gerelateerde pins",.17]],
+  seo:[["Mobiel",.58],["Desktop",.36],["Tablet",.06]],
+  email:[["Mobiel",.64],["Desktop",.31],["Webmail",.05]],
+  direct:[["Direct",.58],["Dealers",.27],["Vakmedia",.15]]
+};
+
+/* =====================================================================
+   STATE
+   ===================================================================== */
+const TODAY = new Date(2026,7,24);
+const MIN_DATE = new Date(2025,0,1);
+let S = {client:ACTIVE_CLIENT, page:"overview", theme:"light",
+         preset:"last30", from:null, to:null, compare:true, bench:"prev", poas:false, geo:"all"};
+let DRAFT = {from:null, to:null, preset:"last30", anchor:null};
+
+const nf=new Intl.NumberFormat("nl-NL");
+const fmt=n=>nf.format(Math.round(n));
+const fmtK=n=>n>=1e6?(n/1e6).toFixed(n>=1e7?0:1).replace(".",",")+" mln":n>=1e4?Math.round(n/1e3)+"k":fmt(n);
+const cur=n=>"€"+fmt(n);
+const curK=n=>n>=1e6?"€"+(n/1e6).toFixed(1).replace(".",",")+" mln":n>=1e4?"€"+Math.round(n/1e3)+"k":"€"+fmt(n);
+const pct=n=>n.toFixed(1).replace(".",",")+"%";
+const sign=n=>(n>0?"+":"")+n.toFixed(1).replace(".",",")+"%";
+const x1=n=>n.toFixed(1).replace(".",",")+"x";
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const NLM=["jan","feb","mrt","apr","mei","jun","jul","aug","sep","okt","nov","dec"];
+const NLMF=["januari","februari","maart","april","mei","juni","juli","augustus","september","oktober","november","december"];
+const dnum=d=>d.getFullYear()*10000+d.getMonth()*100+d.getDate();
+const dlab=d=>d.getDate()+" "+NLM[d.getMonth()]+" "+d.getFullYear();
+const dshort=d=>d.getDate()+" "+NLM[d.getMonth()];
+
+function rangeLabel(f,t){
+  return f.getFullYear()===t.getFullYear() ? `${dshort(f)} – ${dlab(t)}` : `${dlab(f)} – ${dlab(t)}`;
+}
+
+/* =====================================================================
+   PRESETS
+   ===================================================================== */
+const PRESETS=[
+  {id:"today",   l:"Vandaag"},
+  {id:"yesterday",l:"Gisteren"},
+  {id:"thisweek",l:"Deze week (ma–vandaag)"},
+  {id:"last7",   l:"Afgelopen 7 dagen"},
+  {id:"lastweek",l:"Afgelopen week (ma–zo)"},
+  {id:"last28",  l:"Afgelopen 28 dagen"},
+  {id:"last30",  l:"Afgelopen 30 dagen"},
+  {id:"thismonth",l:"Deze maand"},
+  {id:"lastmonth",l:"Vorige maand"},
+  {id:"last90",  l:"Afgelopen 90 dagen"},
+  {id:"qtd",     l:"Kwartaal tot nu toe"},
+  {id:"ytd",     l:"Dit jaar (januari–vandaag)"},
+  {id:"lastyear",l:"Vorig kalenderjaar"}
+];
+function presetLabel(id){
+  if(id==="custom") return "Aangepast";
+  const p=PRESETS.find(x=>x.id===id);
+  return p?p.l:"Aangepast";
+}
+function rangeFor(id){
+  const t=new Date(TODAY); let f=new Date(TODAY), e=new Date(TODAY);
+  const dow=(t.getDay()+6)%7; /* 0 = maandag */
+  switch(id){
+    case "today": break;
+    case "yesterday": f.setDate(t.getDate()-1); e=new Date(f); break;
+    case "thisweek": f.setDate(t.getDate()-dow); break;
+    case "last7": f.setDate(t.getDate()-6); break;
+    case "lastweek": e=new Date(t); e.setDate(t.getDate()-dow-1); f=new Date(e); f.setDate(e.getDate()-6); break;
+    case "last28": f.setDate(t.getDate()-27); break;
+    case "last30": f.setDate(t.getDate()-29); break;
+    case "thismonth": f=new Date(t.getFullYear(),t.getMonth(),1); break;
+    case "lastmonth": f=new Date(t.getFullYear(),t.getMonth()-1,1); e=new Date(t.getFullYear(),t.getMonth(),0); break;
+    case "last90": f.setDate(t.getDate()-89); break;
+    case "qtd": f=new Date(t.getFullYear(),Math.floor(t.getMonth()/3)*3,1); break;
+    case "ytd": f=new Date(t.getFullYear(),0,1); break;
+    case "lastyear": f=new Date(t.getFullYear()-1,0,1); e=new Date(t.getFullYear()-1,11,31); break;
+  }
+  return [f,e];
+}
+function matchPreset(f,t){
+  for(const p of PRESETS){
+    const [a,b]=rangeFor(p.id);
+    if(dnum(a)===dnum(f)&&dnum(b)===dnum(t)) return p.id;
+  }
+  return "custom";
+}
+
+/* =====================================================================
+   DATA
+   ===================================================================== */
+function C(){return CLIENTS[S.client];}
+function T(){
+  const base=Object.assign({},C().targets,TARGET_EDITS[S.client]||{});
+  const g=geoF(); if(g.s===1) return base;
+  const out=Object.assign({},base);
+  ["ses","cnv","macro","mql","sql","deal","spend","rev"].forEach(k=>{
+    if(out[k]!=null) out[k]=out[k]*g.s;});
+  return out;}
+function days(){return Math.max(Math.round((S.to-S.from)/86400000)+1,1);}
+function mult(){return days()/30;}
+function geoF(){
+  if(S.geo==="all") return {s:1,ci:1,label:"Alle landen"};
+  if(S.geo.startsWith("r:")){
+    const r=S.geo.slice(2), ls=GEO.filter(g=>g.r===r);
+    const sh=ls.reduce((a,g)=>a+g.s,0);
+    return {s:sh, ci:ls.reduce((a,g)=>a+g.s*g.ci,0)/Math.max(sh,.0001), label:REGIONS[r]};
+  }
+  const g=GEO.find(x=>x.c===S.geo.slice(2));
+  return g?{s:g.s,ci:g.ci,label:g.n}:{s:1,ci:1,label:"Alle landen"};
+}
+function withAllGeo(fn){const g=S.geo;S.geo="all";try{return fn()}finally{S.geo=g}}
+function chData(k){const m=mult(),g=geoF(),d=C().data[k];
+  return {imp:d.imp*m*g.s,clk:d.clk*m*g.s,ses:d.ses*m*g.s,
+          cnv:d.cnv*m*g.s*g.ci,spend:d.spend*m*g.s,rev:d.rev*m*g.s*g.ci};}
+function totals(){const t={imp:0,clk:0,ses:0,cnv:0,spend:0,rev:0};
+  C().channels.forEach(k=>{const d=chData(k);for(const p in t)t[p]+=d[p];});return t;}
+function D(){return C().deltas[S.bench];}
+
+/* ---- POAS: gross profit on ad spend, only when margin data is switched on ---- */
+function marginFor(k){ return C().margin * (1 + wob(k.length*13+7,.10)); }
+function profitOf(k){
+  const c=C(), x=chData(k);
+  if(c.goal==="ecom") return x.rev * marginFor(k);
+  const L=c.lead, q=[1.14,.92,1.31,.86,1.02,1.21][c.channels.indexOf(k)%6];
+  return x.cnv * L.mqlRate*q * L.sqlRate * L.dealRate*q * L.dealValue * marginFor(k);
+}
+function totalProfit(){ return C().channels.reduce((a,k)=>a+profitOf(k),0); }
+function poasTotal(){ const t=totals(); return t.spend ? totalProfit()/t.spend : 0; }
+function poasOf(k){ const x=chData(k); return x.spend ? profitOf(k)/x.spend : null; }
+function kcls(n){ return "k"+Math.min(Math.max(n,5),7); }
+function wob(seed,spread){const x=Math.sin(seed*127.1)*43758.5453;
+  return ((x-Math.floor(x))-.5)*2*spread;}
+function delta(v,goodUp=true){
+  if(!S.compare) return `<span class="delta flat" style="opacity:.4">—</span>`;
+  if(!v) return `<span class="delta flat">—</span>`;
+  const cls=Math.abs(v)<.5?"flat":(v>0)===goodUp?"up":"down";
+  const a=Math.abs(v)<.5?"→":v>0?"▲":"▼";
+  return `<span class="delta ${cls}">${a} ${sign(v)}</span>`;
+}
+
+/* =====================================================================
+   COMPONENTS
+   ===================================================================== */
+function kpiTile(k){
+  let tgt="";
+  if(k.target){
+    const expected=k.target*(k.lowerBetter?1:mult());
+    const done=k.lowerBetter?(expected/Math.max(k.raw,.0001)):(k.raw/Math.max(expected,.0001));
+    const p=Math.min(done*100,140), ok=done>=.97;
+    tgt=`<div class="kpi-target">
+      <div class="kpi-track"><span style="width:${Math.min(p,100).toFixed(0)}%"></span><i style="left:100%"></i></div>
+      <div class="kpi-tl"><span>doel ${k.targetLabel}</span>
+      <span class="${ok?"pace-on":"pace-off"}">${(done*100).toFixed(0)}% ${ok?"op koers":"achter"}</span></div></div>`;
+  }
+  return `<div class="kpi" style="--kpi-c:${k.c}"><div class="kpi-label">${k.l}</div>
+    <div class="kpi-val">${k.v}</div><div class="kpi-foot">${delta(k.d,k.g)}</div>${tgt}</div>`;
+}
+function barList(items,color,unit){
+  const max=Math.max(...items.map(i=>i[1]),.0001);
+  return `<div class="bd">${items.map(i=>`<div>
+    <div class="bd-lab"><span>${esc(i[0])}</span><em>${i[2]||""}</em></div>
+    <div class="bd-row"><div class="bd-track">
+      <span style="width:${(i[1]/max*100).toFixed(0)}%;background:${color}"></span></div>
+    <div class="bd-val">${unit==="pct"?pct(i[1]*100):fmtK(i[1])}</div></div></div>`).join("")}</div>`;
+}
+function funnelSteps(steps,color){
+  const max=steps[0].v||1; let h=`<div class="fsteps">`;
+  steps.forEach((s,i)=>{
+    h+=`<div class="fstep"><div class="fstep-n">${esc(s.n)}<em>${esc(s.s||"")}</em></div>
+      <div class="fstep-bar"><span style="width:${Math.max(s.v/max*100,1.2).toFixed(1)}%;background:${color}"></span></div>
+      <div class="fstep-v">${fmt(s.v)}</div></div>`;
+    if(i<steps.length-1){
+      const r=steps[i+1].v/Math.max(s.v,.0001)*100;
+      h+=`<div class="fdrop"><div class="fdrop-in">↳ <b>${r<10?r.toFixed(2).replace(".",","):r.toFixed(1).replace(".",",")}%</b>
+        gaat door · <u>${fmt(s.v-steps[i+1].v)} valt af</u></div></div>`;
+    }
+  });
+  return h+`</div>`;
+}
+function flow(){
+  const chs=C().channels;
+  const stages=[{key:"imp",label:"VERTONINGEN"},{key:"clk",label:"KLIKS"},
+                {key:"ses",label:"SESSIES"},{key:"cnv",label:C().goal==="ecom"?"TRANSACTIES":"LEADS"}];
+  const W=940,H=320,top=54,bot=H-14,colW=11,gap=5,colX=[46,340,634,W-colW-46],geo={};
+  stages.forEach((st,si)=>{
+    const vals=chs.map(k=>chData(k)[st.key]);
+    const total=vals.reduce((a,b)=>a+b,0)||1;
+    const usable=(bot-top)-gap*(chs.length-1); let y=top;
+    chs.forEach((k,ci)=>{const h=Math.max((vals[ci]/total)*usable,1.5);
+      (geo[k]=geo[k]||[])[si]={y0:y,y1:y+h}; y+=h+gap;});
+    st.total=total;
+  });
+  let svg=`<svg class="flow" id="flowSvg" viewBox="0 0 ${W} ${H}" role="img"
+    aria-label="Doorstroom van vertoningen naar conversies per kanaal">`;
+  stages.forEach((st,si)=>{
+    svg+=`<text class="flow-stage" x="${colX[si]}" y="18">${st.label}</text>`;
+    svg+=`<text class="flow-total" x="${colX[si]}" y="38">${st.key==="cnv"?fmt(st.total):fmtK(st.total)}</text>`;
+    if(si>0){const r=stages[si-1].total?st.total/stages[si-1].total*100:0;
+      svg+=`<text class="flow-step" x="${colX[si]-28}" y="38" text-anchor="end">${r<10?r.toFixed(2):r.toFixed(1)}%</text>`;}
+  });
+  chs.forEach(k=>{
+    const g=geo[k],col=CH[k].color;
+    for(let i=0;i<g.length-1;i++){
+      const x0=colX[i]+colW,x1=colX[i+1],cx0=x0+(x1-x0)*.45,cx1=x0+(x1-x0)*.55,a=g[i],b=g[i+1];
+      svg+=`<path class="ribbon" data-ch="${k}" d="M${x0},${a.y0} C${cx0},${a.y0} ${cx1},${b.y0} ${x1},${b.y0}
+        L${x1},${b.y1} C${cx1},${b.y1} ${cx0},${a.y1} ${x0},${a.y1} Z" fill="${col}" opacity=".26"/>`;
+    }
+    g.forEach((gg,si)=>{svg+=`<rect class="ribbon" data-ch="${k}" x="${colX[si]}" y="${gg.y0}"
+      width="${colW}" height="${Math.max(gg.y1-gg.y0,1.5)}" rx="2" fill="${col}" opacity=".95"/>`;});
+  });
+  svg+=`</svg>`;
+  const t=totals();
+  const legend=chs.map(k=>`<span class="lg" data-ch="${k}"><i style="background:${CH[k].color}"></i>${CH[k].name}
+    <b>${(chData(k).cnv/(t.cnv||1)*100).toFixed(0)}%</b></span>`).join("");
+  return svg+`<div class="flow-legend" id="flowLegend">${legend}</div>`;
+}
+function trend(seed,cA,cB,labA,labB){
+  const W=560,H=180,pad={l:8,r:8,t:20,b:22},n=14,a=[],b=[];
+  for(let i=0;i<n;i++){a.push(50+i*2.4+wob(seed+i,11));b.push(38+i*3.1+wob(seed+i+50,14));}
+  const maxA=Math.max(...a),maxB=Math.max(...b);
+  const X=i=>pad.l+(i/(n-1))*(W-pad.l-pad.r);
+  const YA=v=>H-pad.b-(v/maxA)*(H-pad.t-pad.b);
+  const YB=v=>H-pad.b-(v/maxB)*(H-pad.t-pad.b);
+  let g=`<svg class="trend" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(labA)} en ${esc(labB)}">`;
+  for(let i=0;i<=3;i++){const y=pad.t+(i/3)*(H-pad.t-pad.b);
+    g+=`<line x1="${pad.l}" y1="${y}" x2="${W-pad.r}" y2="${y}" stroke="var(--line-soft)" stroke-width="1"/>`;}
+  g+=`<path d="M${b.map((v,i)=>`${X(i)},${YB(v)}`).join(" L")} L${X(n-1)},${H-pad.b} L${X(0)},${H-pad.b} Z" fill="${cB}" opacity=".10"/>`;
+  g+=`<polyline points="${b.map((v,i)=>X(i)+","+YB(v)).join(" ")}" fill="none" stroke="${cB}" stroke-width="1.6" stroke-linejoin="round"/>`;
+  g+=`<polyline points="${a.map((v,i)=>X(i)+","+YA(v)).join(" ")}" fill="none" stroke="${cA}" stroke-width="2" stroke-linejoin="round"/>`;
+  g+=`<circle cx="${X(n-1)}" cy="${YA(a[n-1])}" r="3.2" fill="${cA}"/>`;
+  g+=`<text class="tr-axis" x="${pad.l}" y="${H-6}">${dshort(S.from)}</text>`;
+  g+=`<text class="tr-axis" x="${W-pad.r}" y="${H-6}" text-anchor="end">${dshort(S.to)}</text></svg>
+  <div class="flow-legend" style="margin-top:8px;padding-top:8px">
+    <span class="lg"><i style="background:${cA}"></i>${esc(labA)}</span>
+    <span class="lg"><i style="background:${cB}"></i>${esc(labB)}</span></div>`;
+  return g;
+}
+
+/* =====================================================================
+   PAGES
+   ===================================================================== */
+function benchWord(){
+  if(!S.compare) return "geen vergelijking actief";
+  return S.bench==="prev" ? "de vorige periode" : "dezelfde periode vorig jaar";
+}
+
+function pageOverview(){
+  const c=C(),t=totals(),d=D(),tg=T(),ecom=c.goal==="ecom";
+  const cpa=t.spend/Math.max(t.cnv,1),roas=t.spend?t.rev/t.spend:0,cr=t.cnv/Math.max(t.ses,1)*100;
+  const kpis=ecom?[
+    {l:"Sessies",v:fmtK(t.ses),d:d.ses,g:true,c:CH.seo.color,raw:t.ses,target:tg.ses,targetLabel:fmtK(tg.ses*mult())},
+    {l:"Transacties",v:fmt(t.cnv),d:d.cnv,g:true,c:c.accent,raw:t.cnv,target:tg.cnv,targetLabel:fmt(tg.cnv*mult())},
+    {l:"Omzet",v:curK(t.rev),d:d.rev,g:true,c:"#7FD4C6",raw:t.rev,target:tg.rev,targetLabel:curK(tg.rev*mult())},
+    {l:"Advertentiekosten",v:curK(t.spend),d:d.rev*.4,g:false,c:"#F0997B",raw:t.spend,target:tg.spend,targetLabel:curK(tg.spend*mult()),lowerBetter:true},
+    {l:"ROAS",v:x1(roas),d:d.roas,g:true,c:"#26CBCA",raw:roas,target:tg.roas,targetLabel:x1(tg.roas)},
+    {l:"Conversieratio",v:pct(cr),d:d.cr,g:true,c:"#26CBCA",raw:cr,target:tg.cr,targetLabel:pct(tg.cr)}
+  ]:(()=>{
+    const L=c.lead, macro=t.cnv*MACRO_SHARE, crm=t.cnv*CRM_SHARE;
+    const mql=crm*L.mqlRate, sql=mql*L.sqlRate, deal=sql*L.dealRate;
+    return [
+    {l:"Sessies",v:fmtK(t.ses),d:d.ses,g:true,c:CH.seo.color,raw:t.ses,target:tg.ses,targetLabel:fmtK(tg.ses*mult())},
+    {l:"Conversies totaal",v:fmt(t.cnv),d:d.cnv,g:true,c:c.accent,raw:t.cnv,target:tg.cnv,targetLabel:fmt(tg.cnv*mult())},
+    {l:"Aanvragen (macro)",v:fmt(macro),d:d.cnv*1.1,g:true,c:"#F0997B",raw:macro,target:tg.macro,targetLabel:fmt(tg.macro*mult())},
+    {l:"MQL",v:fmt(mql),d:d.cnv*1.1,g:true,c:"#26CBCA",raw:mql,target:tg.mql,targetLabel:fmt(tg.mql*mult())},
+    {l:"SQL",v:fmt(sql),d:d.cnv*.8,g:true,c:"#5FB8D9",raw:sql,target:tg.sql,targetLabel:fmt(tg.sql*mult())},
+    {l:"Klanten",v:fmt(deal),d:d.cnv*.6,g:true,c:"#7FD4C6",raw:deal,target:tg.deal,targetLabel:fmt(tg.deal*mult())},
+    {l:"Kosten per aanvraag",v:cur(t.spend/Math.max(macro,1)),d:d.cpa,g:false,c:"#E05A54",
+      raw:t.spend/Math.max(macro,1),target:tg.cpl,targetLabel:cur(tg.cpl),lowerBetter:true}
+  ];})();
+  if(S.poas) kpis.push({l:"POAS",v:x1(poasTotal()),d:d.roas*.7,g:true,c:"#E8837E",
+    raw:poasTotal(),target:tg.poas,targetLabel:x1(tg.poas)});
+  const rows=c.channels.map(k=>{
+    const x=chData(k),sh=x.cnv/Math.max(t.cnv,1);
+    const kcpa=x.spend?x.spend/Math.max(x.cnv,1):null,kroas=x.spend?x.rev/x.spend:null;
+    const kp=poasOf(k);
+    return `<tr><td><span class="namecell"><i style="background:${CH[k].color}"></i>${CH[k].name}</span></td>
+      <td>${fmtK(x.ses)}</td><td>${fmt(x.cnv)}</td>
+      <td><span class="minibar"><span style="width:${(sh*100).toFixed(0)}%;background:${CH[k].color}"></span></span>${(sh*100).toFixed(0)}%</td>
+      <td>${x.spend?cur(x.spend):"—"}</td>
+      <td>${ecom?(kroas!==null?x1(kroas):"—"):(kcpa!==null?cur(kcpa):"—")}</td>
+      ${S.poas?`<td>${x.spend?cur(profitOf(k)):"—"}</td>
+        <td class="${kp!==null&&kp<1?"down-s":kp!==null?"up-s":""}">${kp!==null?x1(kp):"—"}</td>`:""}</tr>`;
+  }).join("");
+  return `
+  <div class="actionbar"><button class="btn btn-primary">Exporteer PDF</button></div>
+  <div class="kpis ${kcls(kpis.length)}">${kpis.map(kpiTile).join("")}</div>
+  <section class="panel mb">
+    <div class="panel-head"><h2>Van vertoning naar conversie</h2><span class="eyebrow">Beweeg over een kanaal</span></div>
+    <div class="panel-body">${flow()}</div></section>
+  <div class="grid37">
+    <section class="panel"><div class="panel-head"><h2>Kanaalprestatie</h2>
+      <span class="eyebrow">${ecom?"ROAS":"Kosten per lead"}</span></div>
+      <div class="panel-body"><table class="dt">
+        <thead><tr><th>Kanaal</th><th>Sessies</th><th>${ecom?"Transacties":"Leads"}</th>
+        <th>Aandeel</th><th>Kosten</th><th>${ecom?"ROAS":"CPL"}</th>
+        ${S.poas?"<th>Brutowinst</th><th>POAS</th>":""}</tr></thead>
+        <tbody>${rows}</tbody></table></div></section>
+    <section class="panel"><div class="panel-head"><h2>Apparaat</h2><span class="eyebrow">Aandeel sessies</span></div>
+      <div class="panel-body">${barList(DEVICES.map(v=>[v[0],v[1],fmtK(t.ses*v[1])+" sessies"]),"#26CBCA","pct")}</div></section>
+  </div>
+  <section class="panel mb"><div class="panel-head"><h2>Landen</h2>
+    <span class="eyebrow">Index = conversieratio tegen het gemiddelde</span></div>
+    <div class="panel-body"><table class="dt">
+      <thead><tr><th>Land</th><th>Regio</th><th>Sessies</th><th>Aandeel</th>
+      <th>Conversies</th><th>Conv.index</th></tr></thead>
+      <tbody>${(()=>{
+        const all=withAllGeo(()=>totals());
+        const visibleCountryCodes=["NL","US","AU","PL"];
+        const rows=GEO.filter(x=>visibleCountryCodes.includes(x.c))
+          .filter(x=>S.geo==="all"||(S.geo.startsWith("r:")?x.r===S.geo.slice(2):x.c===S.geo.slice(2)));
+        const mx=Math.max(...rows.map(x=>x.s),.0001);
+        return rows.slice().sort((a,b)=>b.s-a.s).map(x=>`<tr>
+          <td>${esc(x.n)}</td><td>${REGIONS[x.r]}</td>
+          <td>${fmtK(all.ses*x.s)}</td>
+          <td><span class="minibar"><span style="width:${(x.s/mx*100).toFixed(0)}%"></span></span>${pct(x.s*100)}</td>
+          <td>${fmt(all.cnv*x.s*x.ci)}</td>
+          <td class="${x.ci>1.05?"up-s":x.ci<.75?"down-s":""}">${x.ci.toFixed(2).replace(".",",")}x</td></tr>`).join("");
+      })()}</tbody></table></div></section>
+  ${ecom?"":leadgenBlocks()}
+  <div class="grid2">
+    <section class="panel"><div class="panel-head"><h2>Verkeer en conversie</h2><span class="eyebrow">Trend</span></div>
+      <div class="panel-body">${trend(11,c.accent,"#26CBCA",ecom?"Transacties":"Leads","Sessies")}</div></section>
+    <section class="panel"><div class="panel-head"><h2>Kosten en opbrengst</h2><span class="eyebrow">Trend</span></div>
+      <div class="panel-body">${trend(29,"#7FD4C6","#F0997B",ecom?"Omzet":"Pipelinewaarde","Mediakosten")}</div></section>
+  </div>
+  <p class="footnote"><span class="mono" style="color:var(--amber)">▲</span> Demodata.</p>`;
+}
+
+function leadgenBlocks(){
+  const c=C(),t=totals(),d=D(),tg=T(),L=c.lead;
+  const macro=t.cnv*MACRO_SHARE, crm=t.cnv*CRM_SHARE;
+  const mql=crm*L.mqlRate,sql=mql*L.sqlRate,deal=sql*L.dealRate,value=deal*L.dealValue;
+  const cpl=t.spend/Math.max(macro,1),cpd=t.spend/Math.max(deal,1);
+  const steps=[
+    {n:"Sessies",s:"alle bezoeken",v:t.ses},
+    {n:"Conversies totaal",s:"alle zeven conversies",v:t.cnv},
+    {n:"Aanvragen",s:"macro · quote, contact, afspraak, bellen, mailen",v:macro},
+    {n:"Belandt in CRM",s:"quote, contact, afspraak",v:crm},
+    {n:"MQL",s:"marketing qualified",v:mql},
+    {n:"SQL",s:"sales accepted",v:sql},
+    {n:"Klant",s:"closed won",v:deal}
+  ];
+  const src=c.channels.map(k=>{
+    const x=chData(k),q=[1.14,.92,1.31,.86,1.02,1.21][c.channels.indexOf(k)%6];
+    const l=x.cnv*MACRO_SHARE,m=x.cnv*CRM_SHARE*L.mqlRate*q,dl=m*L.sqlRate*L.dealRate*q;
+    return {k,l,m,dl,spend:x.spend};
+  }).sort((a,b)=>b.dl-a.dl);
+  const srcRows=src.map(r=>`<tr>
+    <td><span class="namecell"><i style="background:${CH[r.k].color}"></i>${CH[r.k].name}</span></td>
+    <td>${fmt(r.l)}</td><td>${fmt(r.m)}</td><td>${pct(r.m/Math.max(r.l,1)*100)}</td>
+    <td>${fmt(r.dl)}</td><td>${r.spend?cur(r.spend/Math.max(r.l,1)):"—"}</td>
+    <td>${r.spend?cur(r.spend/Math.max(r.dl,1)):"—"}</td>
+    ${S.poas?`<td class="${poasOf(r.k)!==null&&poasOf(r.k)<1?"down-s":poasOf(r.k)!==null?"up-s":""}">${poasOf(r.k)!==null?x1(poasOf(r.k)):"—"}</td>`:""}</tr>`).join("");
+  const forms=[["Offerteaanvraag",.34,.41],["Contactformulier",.27,.58],
+               ["Demo aanvragen",.18,.36],["Whitepaper download",.14,.72],["Terugbelverzoek",.07,.64]];
+  const formRows=forms.map(f=>{
+    const st=t.cnv*2.4*f[1],sub=st*f[2];
+    return `<tr><td>${esc(f[0])}</td><td>${fmt(st)}</td><td>${fmt(sub)}</td>
+      <td>${pct(f[2]*100)}</td><td class="${f[2]>.5?"up-s":"down-s"}">${f[2]>.5?"gezond":"uitval hoog"}</td></tr>`;
+  }).join("");
+  return `
+  <div class="grid37">
+    <section class="panel"><div class="panel-head"><h2>Leadfunnel</h2><span class="eyebrow">GA4 + CRM</span></div>
+      <div class="panel-body">${funnelSteps(steps,c.accent)}
+      <p style="color:var(--muted);font-size:12.5px;margin:16px 0 0">
+      Tussen aanvragen en CRM valt <strong style="color:var(--text)">${fmt(macro-crm)}</strong> weg:
+      telefoon- en e-mailklikken worden wel gemeten maar nergens geregistreerd.
+      Geschatte waarde van gesloten deals: <strong style="color:var(--text)">${curK(value)}</strong>
+      bij een dealwaarde van ${cur(L.dealValue)} en een doorlooptijd van ${L.cycleDays} dagen.
+      Kosten per klant: ${cur(cpd)}.${S.poas?` Brutowinst: <strong style="color:var(--text)">${curK(totalProfit())}</strong>.`:""}</p></div></section>
+    <section class="panel"><div class="panel-head"><h2>Formulieren</h2><span class="eyebrow">Start versus inzending</span></div>
+      <div class="panel-body"><table class="dt">
+        <thead><tr><th>Formulier</th><th>Gestart</th><th>Verstuurd</th><th>Afronding</th><th>Status</th></tr></thead>
+        <tbody>${formRows}</tbody></table></div></section>
+  </div>
+  <section class="panel mb"><div class="panel-head"><h2>Aanvraagkwaliteit per kanaal</h2><span class="eyebrow">Gesorteerd op klanten</span></div>
+    <div class="panel-body"><table class="dt">
+      <thead><tr><th>Kanaal</th><th>Aanvragen</th><th>MQL</th><th>MQL-ratio</th><th>Klanten</th>
+      <th>Kosten / aanvraag</th><th>Kosten / klant</th>${S.poas?"<th>POAS</th>":""}</tr></thead>
+      <tbody>${srcRows}</tbody></table></div></section>
+  `;
+}
+
+function searchTerms(k){
+  const c=C(),x=chData(k),qs=c.queries;
+  const rows=qs.map((q,i)=>{
+    const imp=x.imp*q[1]*(1+wob(i,.05)),clk=imp*q[2]/100;
+    return `<tr><td>${esc(q[0])} ${q[5]==="brand"?'<span class="tag brand">brand</span>':'<span class="tag gen">generiek</span>'}</td>
+      <td>${fmtK(imp)}</td><td>${fmt(clk)}</td><td>${pct(q[2])}</td>
+      <td>${q[3].toFixed(1).replace(".",",")}</td>
+      <td class="${q[4]<0?"up-s":q[4]>0?"down-s":""}">${q[4]===0?"—":(q[4]<0?"▲ ":"▼ ")+Math.abs(q[4]).toFixed(1).replace(".",",")}</td></tr>`;
+  }).join("");
+  const opps=qs.filter(q=>q[3]>=8).sort((a,b)=>b[1]-a[1]).slice(0,4).map(q=>{
+    const imp=x.imp*q[1],pot=imp*(q[3]>12?.055:.085)-imp*q[2]/100;
+    return `<tr><td>${esc(q[0])}</td><td>${fmtK(imp)}</td><td>${q[3].toFixed(1).replace(".",",")}</td>
+      <td>${pct(q[2])}</td><td class="up-s">+${fmt(Math.max(pot,0))} kliks</td></tr>`;
+  }).join("");
+  return `<div class="grid37">
+    <section class="panel"><div class="panel-head"><h2>Zoektermen</h2>
+      <span class="eyebrow">${k==="seo"?"Search Console":"Zoektermenrapport"}</span></div>
+      <div class="panel-body"><table class="dt">
+        <thead><tr><th>Zoekterm</th><th>Vertoningen</th><th>Kliks</th><th>CTR</th><th>Positie</th><th>Verschil</th></tr></thead>
+        <tbody>${rows}</tbody></table></div></section>
+    <section class="panel"><div class="panel-head"><h2>Kansen</h2><span class="eyebrow">Positie 8 en lager</span></div>
+      <div class="panel-body"><table class="dt">
+        <thead><tr><th>Zoekterm</th><th>Vert.</th><th>Pos.</th><th>CTR</th><th>Potentie</th></tr></thead>
+        <tbody>${opps}</tbody></table></div></section>
+  </div>`;
+}
+
+function landingPages(){
+  const c=C(),x=chData("seo"),ecom=c.goal==="ecom";
+  const list=ORGANIC_PAGES[ecom?"ecom":"leads"];
+  const rows=list.map((p,i)=>{
+    const ses=x.ses*p[1]*(1+wob(i,.08));
+    const cnv=x.cnv*p[1]*(1+wob(i+4,.28));
+    return `<tr><td>${esc(p[0])}</td><td>${fmtK(ses)}</td><td>${pct(52+wob(i+9,14))}</td>
+      <td>${fmt(cnv)}</td><td>${pct(cnv/Math.max(ses,1)*100)}</td>
+      <td class="${wob(i+15,1)>0?"up-s":"down-s"}">${S.compare?sign(wob(i+15,1)*18):"—"}</td></tr>`;
+  }).join("");
+  return `<div class="grid37" style="margin-top:14px">
+    <section class="panel"><div class="panel-head"><h2>Belangrijkste landingspagina's</h2>
+      <span class="eyebrow">Organisch verkeer</span></div>
+      <div class="panel-body"><table class="dt">
+        <thead><tr><th>Pagina</th><th>Sessies</th><th>Betrokkenheid</th>
+        <th>${ecom?"Transacties":"Leads"}</th><th>Conv.ratio</th><th>Verschil</th></tr></thead>
+        <tbody>${rows}</tbody></table></div></section>
+    <section class="panel"><div class="panel-head"><h2>Apparaat</h2><span class="eyebrow">Organisch</span></div>
+      <div class="panel-body">${barList(DEVICES.map(v=>[v[0],v[1],fmtK(x.ses*v[1])+" sessies"]),"#7FD4C6","pct")}
+        <p style="color:var(--muted);font-size:12.5px;margin:16px 0 0">
+        Organisch verkeer is doorgaans mobieler dan betaald verkeer. Weegt dat door in de conversieratio,
+        dan zit het probleem meestal in de pagina en niet in het kanaal.</p></div></section>
+  </div>`;
+}
+
+function pagePlatform(k){
+  const c=C(),x=chData(k),t=totals(),d=D(),m=CH[k],tg=T();
+  const paid=m.type==="paid",ecom=c.goal==="ecom";
+  const ctr=x.imp?x.clk/x.imp*100:null,cpc=x.clk&&x.spend?x.spend/x.clk:null;
+  const cpa=x.spend?x.spend/Math.max(x.cnv,1):null,cr=x.cnv/Math.max(x.ses,1)*100;
+  const roas=x.spend?x.rev/x.spend:null;
+  let kpis;
+  if(paid){
+    kpis=[
+      {l:"Vertoningen",v:fmtK(x.imp),d:d.ses*1.2,g:true,c:m.color},
+      {l:"Kliks",v:fmtK(x.clk),d:d.ses,g:true,c:m.color},
+      {l:"CTR",v:pct(ctr),d:d.cr,g:true,c:"#26CBCA"},
+      {l:"Kosten per klik",v:cur(cpc),d:d.cpa*.5,g:false,c:"#F0997B"},
+      {l:ecom?"Transacties":"Leads",v:fmt(x.cnv),d:d.cnv,g:true,c:c.accent},
+      {l:ecom?"ROAS":"Kosten per lead",v:ecom?x1(roas):cur(cpa),d:ecom?d.roas:d.cpa,g:ecom,
+       c:ecom?"#7FD4C6":"#E05A54",raw:ecom?roas:cpa,target:ecom?tg.roas:tg.cpl,
+       targetLabel:ecom?x1(tg.roas):cur(tg.cpl),lowerBetter:!ecom}
+    ];
+    if(S.poas) kpis.push({l:"POAS",v:poasOf(k)!==null?x1(poasOf(k)):"—",d:d.roas*.7,g:true,c:"#E8837E",
+      raw:poasOf(k)||0,target:tg.poas,targetLabel:x1(tg.poas)});
+  } else if(m.type==="organic"){
+    kpis=[
+      {l:"Vertoningen",v:fmtK(x.imp),d:d.ses*1.1,g:true,c:m.color},
+      {l:"Kliks",v:fmtK(x.clk),d:d.ses,g:true,c:m.color},
+      {l:"CTR",v:pct(ctr),d:d.cr,g:true,c:"#26CBCA"},
+      {l:"Gem. positie",v:(c.queries.reduce((a,q)=>a+q[3],0)/c.queries.length).toFixed(1).replace(".",","),d:-d.cr,g:false,c:"#26CBCA"},
+      {l:ecom?"Transacties":"Leads",v:fmt(x.cnv),d:d.cnv,g:true,c:c.accent}
+    ];
+  } else if(m.type==="email"){
+    kpis=[
+      {l:"Verzonden",v:fmtK(x.imp),d:d.ses*.4,g:true,c:m.color},
+      {l:"Kliks",v:fmtK(x.clk),d:d.ses,g:true,c:m.color},
+      {l:"Klikratio",v:pct(x.clk/Math.max(x.imp,1)*100),d:d.cr,g:true,c:"#26CBCA"},
+      {l:"Sessies",v:fmtK(x.ses),d:d.ses,g:true,c:"#26CBCA"},
+      {l:ecom?"Transacties":"Leads",v:fmt(x.cnv),d:d.cnv,g:true,c:c.accent}
+    ];
+  } else {
+    kpis=[
+      {l:"Sessies",v:fmtK(x.ses),d:d.ses,g:true,c:m.color},
+      {l:"Nieuwe bezoekers",v:fmtK(x.ses*.58),d:d.ses*.8,g:true,c:"#26CBCA"},
+      {l:"Conversieratio",v:pct(cr),d:d.cr,g:true,c:"#26CBCA"},
+      {l:ecom?"Transacties":"Leads",v:fmt(x.cnv),d:d.cnv,g:true,c:c.accent},
+      {l:"Aandeel in conversies",v:pct(x.cnv/Math.max(t.cnv,1)*100),d:d.cnv*.3,g:true,c:"#7FD4C6"}
+    ];
+  }
+  const rows=(ROWS[k]||[]).map((r,i)=>{
+    const share=r[1]*(1+wob(i+k.length,.06));
+    const ses=x.ses*share,cnv=x.cnv*share*(1+wob(i+7,.18)),sp=x.spend*share*(1+wob(i+13,.12));
+    return `<tr><td>${esc(r[0])}</td><td>${fmtK(ses)}</td><td>${fmt(cnv)}</td>
+      <td>${pct(cnv/Math.max(ses,1)*100)}</td><td>${sp?cur(sp):"—"}</td>
+      <td>${ecom?(sp?x1((x.rev*share)/sp):"—"):(sp?cur(sp/Math.max(cnv,1)):"—")}</td></tr>`;
+  }).join("");
+  const bdItems=(BREAKDOWN[k]||[]).map(b=>[b[0],b[1],fmtK(x.ses*b[1])+" sessies"]);
+  const showTerms=(k==="seo"||k==="google");
+  return `
+  <div class="kpis ${kcls(kpis.length)}">${kpis.map(kpiTile).join("")}</div>
+  <div class="grid2">
+    <section class="panel"><div class="panel-head"><h2>Ontwikkeling</h2><span class="eyebrow">Over de periode</span></div>
+      <div class="panel-body">${trend(k.length*7,m.color,"#26CBCA",ecom?"Transacties":"Conversies",paid?"Kosten":"Sessies")}</div></section>
+    <section class="panel"><div class="panel-head"><h2>Verdeling</h2><span class="eyebrow">Aandeel sessies</span></div>
+      <div class="panel-body">${barList(bdItems,m.color,"pct")}</div></section>
+  </div>
+  <section class="panel ${showTerms?"mb":""}">
+    <div class="panel-head"><h2>${paid?"Campagnes":m.type==="organic"?"Paginagroepen":m.type==="email"?"Verzendingen":"Bronnen"}</h2>
+      <span class="eyebrow">Op bijdrage</span></div>
+    <div class="panel-body"><table class="dt">
+      <thead><tr><th>${paid?"Campagne":"Groep"}</th><th>Sessies</th><th>${ecom?"Transacties":"Leads"}</th>
+      <th>Conv.ratio</th><th>Kosten</th><th>${ecom?"ROAS":"CPL"}</th></tr></thead>
+      <tbody>${rows}</tbody></table></div></section>
+  ${k==="seo"?landingPages():""}
+  ${showTerms?searchTerms(k):""}
+  <p class="footnote"><span class="mono" style="color:var(--amber)">▲</span> Demodata. Bron: ${esc(m.src)}.</p>`;
+}
+
+function pageWebsite(){
+  const c=C(),t=totals(),d=D(),tg=T(),ecom=c.goal==="ecom";
+
+  /* ---- formulieren op de site, ook de niet-lead formulieren ---- */
+  const forms=SITE_FORMS[ecom?"ecom":"leads"];
+  const formBase=t.ses*0.041;
+  const formRows=forms.map((f,i)=>{
+    const views=t.ses*f[1]*.34*(1+wob(i,.09));
+    const start=formBase*f[1]*2.6*(1+wob(i+3,.12));
+    const sub=start*f[2];
+    return `<tr><td>${esc(f[0])}</td><td>${fmtK(views)}</td><td>${fmt(start)}</td>
+      <td>${fmt(sub)}</td><td>${pct(f[2]*100)}</td>
+      <td><span class="pill ${f[2]>=.6?"on":f[2]>=.45?"near":"off"}">${
+        f[2]>=.6?"gezond":f[2]>=.45?"aandacht":"uitval hoog"}</span></td></tr>`;
+  }).join("");
+  const formTotal=forms.reduce((a,f,i)=>a+formBase*f[1]*2.6*(1+wob(i+3,.12))*f[2],0);
+
+  if(ecom){
+    const aov=t.rev/Math.max(t.cnv,1);
+    const cr=t.cnv/Math.max(t.ses,1)*100;
+    const refundRate=5.8+wob(2,1.4);
+    const views=t.ses*2.9, cart=t.ses*.184, checkout=t.ses*.071;
+    const kpis=[
+      {l:"Omzet",v:curK(t.rev),d:d.rev,g:true,c:"#7FD4C6",raw:t.rev,target:tg.rev,targetLabel:curK(tg.rev*mult())},
+      {l:"Orders",v:fmt(t.cnv),d:d.cnv,g:true,c:c.accent,raw:t.cnv,target:tg.cnv,targetLabel:fmt(tg.cnv*mult())},
+      {l:"Gem. orderwaarde",v:cur(aov),d:d.rev-d.cnv,g:true,c:"#26CBCA"},
+      {l:"Conversieratio",v:pct(cr),d:d.cr,g:true,c:"#26CBCA",raw:cr,target:tg.cr,targetLabel:pct(tg.cr)},
+      {l:"Formulierinzendingen",v:fmt(formTotal),d:d.cr*1.4,g:true,c:"#F0997B"},
+      {l:"Retourpercentage",v:pct(refundRate),d:-d.cr*.5,g:false,c:"#E05A54"}
+    ];
+    const steps=[
+      {n:"Sessies",s:"alle bezoeken",v:t.ses},
+      {n:"Productweergaven",s:"detailpagina",v:views},
+      {n:"Toegevoegd aan winkelwagen",s:"add to cart",v:cart},
+      {n:"Checkout gestart",s:"begin checkout",v:checkout},
+      {n:"Aankoop",s:"purchase",v:t.cnv}
+    ];
+    const prods=[["Eiken eettafel 220cm",.14],["Wandkast modulair",.11],["Loungebank 3-zits",.10],
+      ["Boekenkast staal",.08],["Salontafel marmer",.07],["Eetkamerstoel set",.07],["Vloerkleed wol",.05]];
+    const prodRows=prods.map((pr,i)=>{
+      const units=t.cnv*pr[1]*(1+wob(i,.14)),rev=t.rev*pr[1]*(1+wob(i+3,.18));
+      return `<tr><td>${esc(pr[0])}</td><td>${fmt(units)}</td><td>${cur(rev)}</td>
+        <td>${cur(rev/Math.max(units,1))}</td><td>${pct(2.1+wob(i+8,1.1))}</td>
+        <td class="${wob(i+11,1)>0?"up-s":"down-s"}">${S.compare?sign(wob(i+11,1)*14):"—"}</td></tr>`;
+    }).join("");
+    const statusRows=ORDER_STATUS.map((st,i)=>{
+      const n=t.cnv*st[1]*(1+wob(i+7,.08)), v=t.rev*st[1]*(1+wob(i+11,.1));
+      return `<tr><td>${esc(st[0])}</td><td>${fmt(n)}</td><td>${pct(st[1]*100)}</td>
+        <td>${cur(v)}</td><td>${cur(v/Math.max(n,1))}</td></tr>`;
+    }).join("");
+    return `
+  <div class="kpis k6">${kpis.map(kpiTile).join("")}</div>
+  <div class="grid37">
+    <section class="panel"><div class="panel-head"><h2>Aankoopfunnel</h2>
+      <span class="eyebrow">GA4 e-commerce events</span></div>
+      <div class="panel-body">${funnelSteps(steps,c.accent)}${S.poas?`
+      <p style="color:var(--muted);font-size:12.5px;margin:16px 0 0">Brutowinst deze periode:
+      <strong style="color:var(--text)">${curK(totalProfit())}</strong> bij een gemiddelde marge van ${pct(c.margin*100)}.</p>`:""}</div></section>
+    <section class="panel"><div class="panel-head"><h2>Omzet per apparaat</h2><span class="eyebrow">Aandeel</span></div>
+      <div class="panel-body">${barList([["Mobiel",t.rev*.47,fmt(t.cnv*.54)+" orders"],
+        ["Desktop",t.rev*.44,fmt(t.cnv*.38)+" orders"],["Tablet",t.rev*.09,fmt(t.cnv*.08)+" orders"]],c.accent)}
+        <p style="color:var(--muted);font-size:12.5px;margin:16px 0 0">Mobiel levert meer orders maar een lagere
+        orderwaarde. Het verschil zit vooral in de checkout.</p></div></section>
+  </div>
+  <section class="panel mb"><div class="panel-head"><h2>Best verkochte producten</h2>
+    <span class="eyebrow">WooCommerce · op omzet</span></div>
+    <div class="panel-body"><table class="dt">
+      <thead><tr><th>Product</th><th>Verkocht</th><th>Omzet</th><th>Gem. prijs</th>
+      <th>Conv.ratio</th><th>Verschil</th></tr></thead>
+      <tbody>${prodRows}</tbody></table></div></section>
+  <section class="panel mb"><div class="panel-head"><h2>Formulieren op de site</h2>
+    <span class="eyebrow">Alle formulieren, ook zonder leadwaarde</span></div>
+    <div class="panel-body"><table class="dt">
+      <thead><tr><th>Formulier</th><th>Weergaven</th><th>Gestart</th><th>Verstuurd</th>
+      <th>Afronding</th><th>Status</th></tr></thead>
+      <tbody>${formRows}</tbody></table></div></section>
+  <div class="grid2">
+    <section class="panel"><div class="panel-head"><h2>Betaalmethode</h2><span class="eyebrow">Aandeel omzet</span></div>
+      <div class="panel-body">${barList(PAYMENTS.map(v=>[v[0],v[1],cur(t.rev*v[1])]),c.accent,"pct")}</div></section>
+    <section class="panel"><div class="panel-head"><h2>Verzendmethode</h2><span class="eyebrow">Aandeel orders</span></div>
+      <div class="panel-body">${barList(SHIPPING.map(v=>[v[0],v[1],fmt(t.cnv*v[1])+" orders"]),"#26CBCA","pct")}</div></section>
+  </div>
+  <section class="panel mb"><div class="panel-head"><h2>Orderstatus</h2>
+    <span class="eyebrow">WooCommerce · rechtstreeks uit de shop</span></div>
+    <div class="panel-body"><table class="dt">
+      <thead><tr><th>Status</th><th>Orders</th><th>Aandeel</th><th>Waarde</th><th>Gem. waarde</th></tr></thead>
+      <tbody>${statusRows}</tbody></table></div></section>
+  <div class="grid2">
+    <section class="panel"><div class="panel-head"><h2>Kortingscodes</h2>
+      <span class="eyebrow">WooCommerce · gebruik en weggegeven marge</span></div>
+      <div class="panel-body"><table class="dt">
+        <thead><tr><th>Code</th><th>Gebruikt</th><th>Omzet</th><th>Korting</th><th>Weggegeven</th></tr></thead>
+        <tbody>${COUPONS.map((cp,i)=>{
+          const n=t.cnv*.28*cp[1]*(1+wob(i+21,.12)), rv=t.rev*.28*cp[1]*(1+wob(i+23,.14));
+          return `<tr><td>${esc(cp[0])}</td><td>${fmt(n)}</td><td>${cur(rv)}</td>
+            <td>${pct(cp[2]*100)}</td><td class="down-s">${cur(rv*cp[2])}</td></tr>`;}).join("")}</tbody></table>
+      </div></section>
+    <section class="panel"><div class="panel-head"><h2>Nieuwe en terugkerende klanten</h2>
+      <span class="eyebrow">WooCommerce · op klant-ID</span></div>
+      <div class="panel-body">${barList(CUSTOMER_TYPE.map((ct,i)=>
+        [ct[0], ct[1], fmt(t.cnv*ct[1])+" orders · "+cur((t.rev*(i?.44:.56))/Math.max(t.cnv*ct[1],1))+" gem."]),
+        c.accent,"pct")}
+        <p style="color:var(--muted);font-size:12.5px;margin:16px 0 0">
+        Terugkerende klanten zijn een kleiner deel van de orders maar hebben een hogere orderwaarde.
+        Dat verschil is de basis voor de RFM-module.</p></div></section>
+  </div>
+  <p class="footnote"><span class="mono" style="color:var(--amber)">▲</span> Demodata.</p>`;
+  }
+
+  /* ---- leadgen ---- */
+  const L=c.lead;
+  const macro=t.cnv*MACRO_SHARE, crm=t.cnv*CRM_SHARE;
+  const reqValue=crm*L.dealValue*L.mqlRate*L.sqlRate;
+  const kpis=[
+    {l:"Conversies totaal",v:fmt(t.cnv),d:d.cnv,g:true,c:c.accent},
+    {l:"Aanvragen (macro)",v:fmt(macro),d:d.cnv*1.1,g:true,c:"#F0997B"},
+    {l:"Belandt in CRM",v:fmt(crm),d:d.cnv*.9,g:true,c:"#26CBCA"},
+    {l:"Buiten het CRM",v:fmt(macro-crm),d:d.cnv*.4,g:false,c:"#E05A54"},
+    {l:"Aanvraagwaarde",v:curK(reqValue),d:d.cnv*1.2,g:true,c:"#7FD4C6"}
+  ];
+  const convRows=CONVERSIONS.slice().sort((a,b)=>b[1]-a[1]).map((cvn,i)=>{
+    const n=t.cnv*cvn[1];
+    return `<tr><td>${esc(cvn[0])}</td><td>${fmt(n)}</td><td>${pct(cvn[1]*100)}</td>
+      <td><span class="tag ${cvn[2]==="macro"?"brand":"gen"}">${cvn[2]}</span></td>
+      <td><span class="pill ${cvn[3]?"on":"off"}">${cvn[3]?"in CRM":"niet in CRM"}</span></td>
+      <td class="${wob(i+31,1)>0?"up-s":"down-s"}">${S.compare?sign(wob(i+31,1)*16):"—"}</td></tr>`;
+  }).join("");
+  const svcRows=SERVICES.map((sv,i)=>{
+    const n=t.cnv*sv[1]*(1+wob(i+7,.12)), v=reqValue*sv[1]*(1+wob(i+13,.16));
+    return `<tr><td>${esc(sv[0])}</td><td>${fmt(n)}</td><td>${pct(sv[1]*100)}</td>
+      <td>${cur(v)}</td><td>${cur(v/Math.max(n,1))}</td></tr>`;
+  }).join("");
+  return `
+  <div class="kpis k5">${kpis.map(kpiTile).join("")}</div>
+  <section class="panel mb"><div class="panel-head"><h2>Conversies</h2>
+    <span class="eyebrow">Alle zeven, zoals ze in GA4 staan</span></div>
+    <div class="panel-body"><table class="dt">
+      <thead><tr><th>Conversie</th><th>Aantal</th><th>Aandeel</th><th>Type</th>
+      <th>Registratie</th><th>Verschil</th></tr></thead>
+      <tbody>${convRows}</tbody></table></div></section>
+  <section class="panel mb"><div class="panel-head"><h2>Formulieren op de site</h2>
+    <span class="eyebrow">Alle formulieren, ook zonder leadwaarde</span></div>
+    <div class="panel-body"><table class="dt">
+      <thead><tr><th>Formulier</th><th>Weergaven</th><th>Gestart</th><th>Verstuurd</th>
+      <th>Afronding</th><th>Status</th></tr></thead>
+      <tbody>${formRows}</tbody></table></div></section>
+  <div class="grid37">
+    <section class="panel"><div class="panel-head"><h2>Aanvragen per categorie</h2>
+      <span class="eyebrow">Uit het formulierveld</span></div>
+      <div class="panel-body"><table class="dt">
+        <thead><tr><th>Dienst</th><th>Aanvragen</th><th>Aandeel</th><th>Waarde</th><th>Gem. waarde</th></tr></thead>
+        <tbody>${svcRows}</tbody></table></div></section>
+    <section class="panel"><div class="panel-head"><h2>Contactmomenten</h2><span class="eyebrow">Aandeel</span></div>
+      <div class="panel-body">${barList(CONVERSIONS.filter(x=>x[2]==="macro")
+        .map(x=>[x[0],x[1],fmt(t.cnv*x[1])]),c.accent,"pct")}
+        <p style="color:var(--muted);font-size:12.5px;margin:16px 0 0">
+        Tel click en email click zijn samen ${pct((CONVERSIONS[3][1]+CONVERSIONS[4][1])/MACRO_SHARE*100)}
+        van alle aanvragen, maar ze belanden niet in het CRM. Bij een machinebouwer met dealers
+        en vestigingen is dit vaak de grootste blinde vlek.</p></div></section>
+  </div>
+  <p class="footnote"><span class="mono" style="color:var(--amber)">▲</span> Demodata.</p>`;
+}
+
+function pageTargets(){
+  const c=C(),t=withAllGeo(()=>totals()),tg=withAllGeo(()=>T()),ecom=c.goal==="ecom";
+  const cpl=t.spend/Math.max(t.cnv,1),roas=t.spend?t.rev/t.spend:0,cr=t.cnv/Math.max(t.ses,1)*100;
+  const L=c.lead||{},mql=t.cnv*(L.mqlRate||0),sql=mql*(L.sqlRate||0),deal=sql*(L.dealRate||0);
+  const defs=ecom?[
+    {k:"ses",l:"Sessies",cur:t.ses,per:true,f:fmtK},
+    {k:"cnv",l:"Transacties",cur:t.cnv,per:true,f:fmt},
+    {k:"rev",l:"Omzet",cur:t.rev,per:true,f:curK},
+    {k:"spend",l:"Advertentiekosten",cur:t.spend,per:true,f:curK,lower:true},
+    {k:"roas",l:"ROAS",cur:roas,per:false,f:x1},
+    {k:"cr",l:"Conversieratio (%)",cur:cr,per:false,f:pct}
+  ].concat(S.poas?[{k:"poas",l:"POAS",cur:poasTotal(),per:false,f:x1}]:[]):[
+    {k:"ses",l:"Sessies",cur:t.ses,per:true,f:fmtK},
+    {k:"cnv",l:"Leads",cur:t.cnv,per:true,f:fmt},
+    {k:"mql",l:"MQL",cur:mql,per:true,f:fmt},
+    {k:"sql",l:"SQL",cur:sql,per:true,f:fmt},
+    {k:"deal",l:"Klanten",cur:deal,per:true,f:fmt},
+    {k:"spend",l:"Mediakosten",cur:t.spend,per:true,f:curK,lower:true},
+    {k:"cpl",l:"Kosten per lead",cur:cpl,per:false,f:cur,lower:true},
+    {k:"cr",l:"Conversieratio (%)",cur:cr,per:false,f:pct}
+  ].concat(S.poas?[{k:"poas",l:"POAS",cur:poasTotal(),per:false,f:x1}]:[]);
+  const rows=defs.map(dd=>{
+    const target=tg[dd.k]||0, expected=dd.per?target*mult():target;
+    const done=dd.lower?(expected/Math.max(dd.cur,.0001)):(dd.cur/Math.max(expected,.0001));
+    const p=Math.min(done*100,140);
+    const cls=done>=1?"on":done>=.9?"near":"off", lbl=done>=1?"gehaald":done>=.9?"bijna":"achter";
+    return `<tr><td>${dd.l}</td>
+      <td><input class="tin" type="number" step="any" value="${target}" data-t="${dd.k}" aria-label="Doel voor ${dd.l}"></td>
+      <td>${dd.per?"per maand":"gemiddeld"}</td><td>${dd.f(expected)}</td><td>${dd.f(dd.cur)}</td>
+      <td><div class="prog"><span style="width:${Math.min(p,100).toFixed(0)}%;background:${
+        done>=1?"var(--pos)":done>=.9?"var(--amber)":"var(--neg)"}"></span><i style="left:100%"></i></div></td>
+      <td><span class="pill ${cls}">${(done*100).toFixed(0)}% · ${lbl}</span></td></tr>`;
+  }).join("");
+  return `
+  <div class="actionbar"><button class="btn" id="resetT">Terug naar standaard</button>
+    <button class="btn btn-primary">Doelen opslaan</button></div>
+  <section class="panel mb"><div class="panel-head"><h2>Doelen voor ${esc(c.name)}</h2>
+    <span class="eyebrow">Doeltype: ${ecom?"e-commerce":"leadgeneratie"}</span></div>
+    <div class="panel-body"><table class="dt">
+      <thead><tr><th>Metric</th><th>Doel</th><th>Basis</th><th>Verwacht deze periode</th>
+      <th>Werkelijk</th><th>Voortgang</th><th>Status</th></tr></thead>
+      <tbody>${rows}</tbody></table></div></section>
+  <div class="grid2">
+    <section class="panel"><div class="panel-head"><h2>Hoe de omrekening werkt</h2><span class="eyebrow">Pacing</span></div>
+      <div class="panel-body" style="color:var(--text-2);font-size:13px">
+        <p style="margin-top:0">Volumedoelen zoals sessies, leads en omzet zijn maanddoelen. Bij ${days()} dagen
+        rekent het dashboard met ${(mult()*100).toFixed(0)}% van het maanddoel.</p>
+        <p>Ratiodoelen zoals ROAS, conversieratio en kosten per lead worden niet omgerekend.</p>
+        <p>Bij kostendoelen is lager beter. Onder het doel blijven telt als gehaald.</p>
+        <p style="margin-bottom:0">Deze pagina toont altijd alle landen samen, ongeacht het filter bovenin.
+        Op de andere pagina's schalen de doelen wel mee met het gekozen land of de gekozen regio.</p></div></section>
+    <section class="panel"><div class="panel-head"><h2>Waar dit terugkomt</h2><span class="eyebrow">In het dashboard</span></div>
+      <div class="panel-body" style="color:var(--text-2);font-size:13px">
+        <p style="margin-top:0">Elke KPI-tegel met een doel krijgt een voortgangsbalk met een streepje op honderd procent.</p>
+        <p>Zonder doel toont een tegel alleen het verschil met de vergelijkingsperiode. Dat vertelt of het beter gaat,
+        maar niet of het goed genoeg is.</p>
+        <p style="margin-bottom:0">In productie worden doelen opgeslagen bij de klant en kunnen ze daar worden aangepast.</p></div></section>
+  </div>`;
+}
+
+function pageHealth(){
+  const c=C();
+  const map={meta:"Meta Ads",linkedin:"LinkedIn Ads",tiktok:"TikTok Ads",pinterest:"Pinterest Ads",email:"ESP / e-mail"};
+  let list=[{n:"GA4",s:"live",t:"BigQuery export · 06:00"},
+            {n:"Google Ads",s:"live",t:"Data Transfer · 05:30"},
+            {n:"Search Console",s:"live",t:"Bulk export · 07:00"}];
+  c.channels.forEach(k=>{if(map[k])list.push({n:map[k],s:k==="email"?"live":"lag",
+    t:k==="email"?"API · 06:15":"Connector · 24u vertraging"});});
+  list.push({n:c.goal==="leads"?"CRM":"WooCommerce",s:c.goal==="leads"?"off":"live",
+    t:c.goal==="leads"?"Nog niet gekoppeld":"REST API · 06:30"});
+  list.push({n:"Kostenimport",s:"live",t:"Sheet · handmatig"});
+  if(S.poas) list.push({n:"Margedata",s:"live",t:"Productfeed · 06:45"});
+  list.push({n:"Doelen",s:"live",t:"Config · handmatig"});
+  const items=list.map(s=>`<div class="st"><span class="st-dot ${s.s}"></span>
+    <div><div class="st-n">${esc(s.n)}</div><div class="st-t">${esc(s.t)}</div></div></div>`).join("");
+  const defs=[
+    ["Sessie","GA4 sessies, exclusief interne IP's en bekende bots.","GA4"],
+    ["Conversie","Zeven events: request a quote, contact formulier, make an appointment, tel click, email click, data sheet download en newsletter aanmelding.","GA4"],
+    ["Macro-conversie","De vijf conversies die om contact vragen. Data sheet download en newsletter tellen niet mee.","GA4"],
+    ["Aanvraag in CRM","Alleen request a quote, contact formulier en make an appointment. Tel en email click worden gemeten maar niet geregistreerd.","GA4 + CRM"],
+    ["Kosten","Advertentiekosten exclusief btw en exclusief bureaufee.","Advertentieplatformen"],
+    c.goal==="ecom"?["ROAS","Omzet gedeeld door advertentiekosten, laatste niet-directe klik.","GA4 + platformen"]
+                   :["MQL","Lead die voldoet aan de scoringsdrempel die met sales is afgesproken.","CRM"],
+    ["Zoekterm","Search Console query. Geanonimiseerde queries niet meegeteld.","Search Console"],
+    ["Vergelijkingsperiode","Vorige periode van gelijke lengte, of dezelfde datums vorig jaar.","Datamodel"],
+    ["Kanaal","Vaste groepering op bron, medium en campagne. Wijkt af van GA4-standaard.","Datamodel"]
+  ].map(r=>`<tr><td>${esc(r[0])}</td><td style="text-align:left;color:var(--text-2);font-weight:400">${esc(r[1])}</td>
+    <td>${esc(r[2])}</td></tr>`).join("");
+  return `
+  <section class="panel mb"><div class="panel-head"><h2>Verversingsstatus</h2>
+    <span class="eyebrow">Live · vertraagd · niet gekoppeld</span></div>
+    <div class="status">${items}</div></section>
+  <section class="panel mb"><div class="panel-head"><h2>Uitbreidingen</h2>
+    <span class="eyebrow">Aan of uit voor deze klant</span></div>
+    <div class="mod-row">
+      <div class="mod-txt">
+        <div class="mod-n">POAS
+          <span class="pill ${S.poas?"on":""}" style="${S.poas?"":"background:var(--track);color:var(--muted)"}">${S.poas?"aan":"uit"}</span></div>
+        <div class="mod-d">Rekent met brutowinst in plaats van omzet. Zodra dit aanstaat verschijnt POAS als
+        extra KPI-tegel op het overzicht, ${c.goal==="ecom"?"de e-commercepagina":"de leadgenpagina"} en bij
+        elk betaald kanaal, plus een kolom brutowinst in de kanaaltabel en een doelregel op de doelenpagina.</div>
+        <div class="mod-need">Vereist: marge per product of per order · huidige gemiddelde marge ${pct(c.margin*100)}</div>
+      </div>
+      <button class="sw mod-sw ${S.poas?"on":""}" id="swPoas" role="switch"
+        aria-checked="${S.poas}" aria-label="POAS aan of uit"></button>
+    </div>
+  </section>
+  <section class="panel"><div class="panel-head"><h2>Definities</h2><span class="eyebrow">Afgestemd met de klant</span></div>
+    <div class="panel-body"><table class="dt">
+      <thead><tr><th>Metric</th><th style="text-align:left">Definitie</th><th>Bron</th></tr></thead>
+      <tbody>${defs}</tbody></table></div></section>`;
+}
+
+function pageLifecycle(){
+  const c=C(),t=totals(),d=D(),L=c.lead,g=geoF();
+  const macro=t.cnv*MACRO_SHARE, crm=t.cnv*CRM_SHARE;
+  const cv=n=>t.cnv*(CONVERSIONS.find(x=>x[0]===n)||[0,0])[1];
+  const seo=chData("seo"), sea=chData("google");
+  const avgPos=c.queries.reduce((a,q)=>a+q[3],0)/c.queries.length;
+  const engaged=t.ses*.53;
+  const returning=t.ses*.39;
+
+  /* delta-sleutel per metric, zodat vorige periode en vorig jaar afgeleid worden */
+  const dp=c.deltas.prev, dy=c.deltas.yoy;
+  const back=(v,key,set)=>v/(1+(set[key]||0)/100);
+
+  const STAGES=[
+    {k:"Awareness",  col:"#5FB8D9", head:fmtK(t.imp), sub:"vertoningen", dk:"ses",
+     rows:[["Vertoningen totaal",t.imp,fmtK,"ses"],
+           ["Vertoningen organisch",seo.imp,fmtK,"ses"],
+           ["Vertoningen betaald",sea.imp,fmtK,"ses"],
+           ["Gemiddelde positie organisch",avgPos,v=>v.toFixed(1).replace(".",","),"cr"]]},
+    {k:"Acquisition",col:"#26CBCA", head:fmtK(t.ses), sub:"sessies", dk:"ses",
+     rows:[["Sessies",t.ses,fmtK,"ses"],
+           ["Kliks",t.clk,fmtK,"ses"],
+           ["Nieuwe bezoekers",t.ses*.61,fmtK,"ses"],
+           ["Kosten per klik",sea.spend/Math.max(sea.clk,1),cur,"cpa"]]},
+    {k:"Engagement", col:"#7FD4C6", head:pct(engaged/Math.max(t.ses,1)*100), sub:"betrokken sessies", dk:"cr",
+     rows:[["Betrokken sessies",engaged,fmtK,"ses"],
+           ["Betrokkenheidspercentage",engaged/Math.max(t.ses,1)*100,pct,"cr"],
+           ["Data sheet downloads",cv("Data sheet download"),fmt,"cnv"],
+           ["Pagina's per sessie",3.4,v=>v.toFixed(1).replace(".",","),"cr"]]},
+    {k:"Conversion", col:"#DD1742", head:fmt(macro), sub:"aanvragen", dk:"cnv",
+     rows:[["Conversies totaal",t.cnv,fmt,"cnv"],
+           ["Aanvragen (macro)",macro,fmt,"cnv"],
+           ["Belandt in CRM",crm,fmt,"cnv"],
+           ["Conversieratio",t.cnv/Math.max(t.ses,1)*100,pct,"cr"],
+           ["Kosten per aanvraag",t.spend/Math.max(macro,1),cur,"cpa"]]},
+    {k:"Retention",  col:"#F0997B", head:fmt(returning), sub:"terugkerende bezoekers", dk:"ses",
+     rows:[["Terugkerende bezoekers",returning,fmtK,"ses"],
+           ["Herhaalaanvragen",crm*.22,fmt,"cnv"],
+           ["Aanvragen onderdelen & service",macro*.24,fmt,"cnv"],
+           ["Nieuwsbriefaanmeldingen",cv("Newsletter aanmelding"),fmt,"cnv"]]}
+  ];
+
+  const cards=STAGES.map(st=>`
+    <div class="lc-card" style="--lc-c:${st.col}">
+      <div class="lc-stage">${st.k}</div>
+      <div class="lc-val">${st.head}</div>
+      <div class="lc-sub">${st.sub}</div>
+      <div class="lc-foot">${delta(d[st.dk],st.k!=="Retention"||true)}</div>
+    </div>`).join("");
+
+  const body=STAGES.map(st=>`
+    <tr class="sect"><td colspan="5" style="color:${st.col}">${st.k}</td></tr>
+    ${st.rows.map(r=>{
+      const [n,v,f,key]=r;
+      return `<tr><td style="padding-left:14px">${esc(n)}</td>
+        <td>${f(v)}</td>
+        <td>${f(back(v,key,dp))}</td>
+        <td>${f(back(v,key,dy))}</td>
+        <td>${delta(S.bench==="prev"?dp[key]:dy[key],true)}</td></tr>`;}).join("")}`).join("");
+
+  return `
+  <div class="actionbar"><button class="btn btn-primary">Exporteer PDF</button></div>
+  <div class="lc">${cards}</div>
+  <section class="panel mb"><div class="panel-head"><h2>Klantlevenscyclus</h2>
+    <span class="eyebrow">${esc(g.label)} · ${rangeLabel(S.from,S.to)}</span></div>
+    <div class="panel-body"><table class="dt">
+      <thead><tr><th>Meetpunt</th><th>Deze periode</th><th>Vorige periode</th>
+      <th>Vorig jaar</th><th>Verschil</th></tr></thead>
+      <tbody>${body}</tbody></table></div></section>
+  <div class="grid2">
+    <section class="panel"><div class="panel-head"><h2>Bereik en verkeer</h2><span class="eyebrow">Trend</span></div>
+      <div class="panel-body">${trend(53,"#5FB8D9","#26CBCA","Vertoningen","Sessies")}</div></section>
+    <section class="panel"><div class="panel-head"><h2>Aanvragen en kosten</h2><span class="eyebrow">Trend</span></div>
+      <div class="panel-body">${trend(67,c.accent,"#F0997B","Aanvragen","Mediakosten")}</div></section>
+  </div>
+  <p class="footnote"><span class="mono" style="color:var(--amber)">▲</span> Demodata.</p>`;
+}
+
+function pageSettings(){
+  const c=C();
+  const row=(n,d,ctrl)=>`<div class="mod-row"><div class="mod-txt">
+    <div class="mod-n">${n}</div><div class="mod-d">${d}</div></div>${ctrl}</div>`;
+  const sel=(id,opts)=>`<select class="dp-cmpsel" style="width:190px;flex:0 0 190px" id="${id}">
+    ${opts.map(o=>`<option${o[2]?" selected":""} value="${o[0]}">${o[1]}</option>`).join("")}</select>`;
+  return `
+  <div class="actionbar"><button class="btn btn-primary">Opslaan</button></div>
+  <div class="grid2">
+    <section class="panel"><div class="panel-head"><h2>Weergave</h2><span class="eyebrow">Per gebruiker</span></div>
+      <div>
+        ${row("Donkere modus","Zelfde schakelaar als het icoon linksboven.",
+          `<button class="sw mod-sw ${S.theme==="dark"?"on":""}" id="swTheme" role="switch"
+            aria-checked="${S.theme==="dark"}" aria-label="Donkere modus"></button>`)}
+        ${row("Taal","Labels en getalnotatie in het dashboard.",
+          sel("setLang",[["nl","Nederlands",true],["en","Engels",false],["de","Duits",false]]))}
+        ${row("Valuta","Alle bedragen worden hierin getoond.",
+          sel("setCur",[["eur","Euro (€)",true],["usd","Dollar ($)",false],["gbp","Pond (£)",false]]))}
+      </div></section>
+    <section class="panel"><div class="panel-head"><h2>Rapportage</h2><span class="eyebrow">Standaardwaarden</span></div>
+      <div>
+        ${row("Standaardperiode","Wat er staat als je het dashboard opent.",
+          sel("setPeriod",[["last30","Afgelopen 30 dagen",true],["last28","Afgelopen 28 dagen",false],
+            ["lastmonth","Vorige maand",false],["ytd","Dit jaar",false]]))}
+        ${row("Standaardvergelijking","Waartegen verschillen worden berekend.",
+          sel("setBench",[["prev","Vorige periode",true],["yoy","Vorig jaar",false]]))}
+        ${row("Maandelijkse PDF","Eerste werkdag van de maand, automatisch per e-mail.",
+          `<button class="sw mod-sw on" role="switch" aria-checked="true" aria-label="Maandelijkse PDF"></button>`)}
+      </div></section>
+  </div>
+  <section class="panel mb"><div class="panel-head"><h2>Meldingen</h2>
+    <span class="eyebrow">Wanneer je bericht krijgt</span></div>
+    <div>
+      ${row("Doel niet gehaald","Signaal zodra een KPI onder de pacinggrens zakt.",
+        `<button class="sw mod-sw on" role="switch" aria-checked="true" aria-label="Doel niet gehaald"></button>`)}
+      ${row("Bron staat stil","Melding als een koppeling meer dan 48 uur niets aanlevert.",
+        `<button class="sw mod-sw on" role="switch" aria-checked="true" aria-label="Bron staat stil"></button>`)}
+      ${row("Afwijkende uitschieters","Automatisch signaal bij statistisch opvallende pieken of dalen.",
+        `<button class="sw mod-sw" role="switch" aria-checked="false" aria-label="Uitschieters"></button>`)}
+    </div></section>
+  <section class="panel"><div class="panel-head"><h2>Account</h2>
+    <span class="eyebrow">Beheerd door Dtch. Digitals</span></div>
+    <div class="panel-body"><table class="dt">
+      <thead><tr><th>Onderdeel</th><th style="text-align:left">Waarde</th><th>Wijzigen</th></tr></thead>
+      <tbody>
+        <tr><td>Klant</td><td style="text-align:left;color:var(--text-2);font-weight:400">${esc(c.name)}</td><td>via bureau</td></tr>
+        <tr><td>Doeltype</td><td style="text-align:left;color:var(--text-2);font-weight:400">${c.goal==="ecom"?"E-commerce":"Leadgeneratie"}</td><td>via bureau</td></tr>
+        <tr><td>Gekoppelde kanalen</td><td style="text-align:left;color:var(--text-2);font-weight:400">${c.channels.map(k=>CH[k].name).join(", ")}</td><td>via bureau</td></tr>
+        <tr><td>Tijdzone</td><td style="text-align:left;color:var(--text-2);font-weight:400">Europe/Amsterdam</td><td>via bureau</td></tr>
+        <tr><td>Toegang</td><td style="text-align:left;color:var(--text-2);font-weight:400">4 gebruikers</td><td>beheren</td></tr>
+      </tbody></table></div></section>`;
+}
+
+/* =====================================================================
+   NAV
+   ===================================================================== */
+const PAGE_TITLES={overview:"Overzicht",lifecycle:"Levenscyclus",webshop:"Webshop",
+  website:"Website",targets:"Doelen",health:"Databronnen",settings:"Instellingen"};
+
+function buildNav(){
+  const c=C(),nav=document.getElementById("nav"),ecom=c.goal==="ecom";
+  let h=`<button class="nav-item" data-page="overview"><span class="swatch" style="background:${c.accent}"></span>Overzicht</button>
+    <button class="nav-item" data-page="lifecycle"><span class="swatch" style="background:#5FB8D9"></span>Levenscyclus</button>
+    <button class="nav-item" data-page="${ecom?"webshop":"website"}"><span class="swatch" style="background:#26CBCA"></span>${ecom?"Webshop":"Website"}</button>`;
+  h+=`<div class="nav-group">Kanalen</div>`;
+  c.channels.forEach(k=>{h+=`<button class="nav-item" data-page="ch:${k}">
+    <span class="swatch" style="background:${CH[k].color}"></span>${CH[k].name}</button>`;});
+  nav.innerHTML=h;
+
+  document.getElementById("navBottom").innerHTML=`
+    <button class="nav-item" data-page="targets"><span class="swatch" style="background:#F0997B"></span>Doelen</button>
+    <button class="nav-item" data-page="health"><span class="swatch" style="background:#7FD4C6"></span>Databronnen</button>
+    <button class="nav-item" data-page="settings">
+      <svg class="nav-ico" width="13" height="13" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+        <circle cx="10" cy="10" r="2.6" stroke="currentColor" stroke-width="1.5"/>
+        <path d="M10 1.6l1.3 2.1 2.4-.5.5 2.4 2.1 1.3-1.4 2 1.4 2-2.1 1.3-.5 2.4-2.4-.5L10 18.4l-1.3-2.1-2.4.5-.5-2.4L3.7 13l1.4-2-1.4-2 2.1-1.3.5-2.4 2.4.5L10 1.6z"
+          stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>Instellingen</button>`;
+
+  document.querySelectorAll("#nav .nav-item, #navBottom .nav-item").forEach(b=>
+    b.addEventListener("click",()=>{S.page=b.dataset.page;render();window.scrollTo({top:0});}));
+}
+
+function buildGeo(){
+  const el=document.getElementById("geoSel");
+  const visibleGeos=[
+    ["all","Global"],
+    ["c:NL","NL"],
+    ["c:AU","AUS"],
+    ["c:PL","Poland"],
+    ["c:US","USA"]
+  ];
+  el.innerHTML=visibleGeos.map(([value,label])=>`<option value="${value}">${label}</option>`).join("");
+  if(!visibleGeos.some(([value])=>value===S.geo)) S.geo="all";
+  el.value=S.geo;
+  el.addEventListener("change",()=>{S.geo=el.value;render();});
+}
+
+function applyClient(){
+  const c=C();
+  document.documentElement.style.setProperty("--accent",c.accent);
+  const av=document.getElementById("cAv");
+  av.textContent=c.initial; av.style.background=c.accent;
+  document.getElementById("cNm").textContent=c.name;
+  document.getElementById("cTg").textContent=c.tag;
+}
+
+function applyTheme(){
+  document.documentElement.setAttribute("data-theme",S.theme);
+  document.getElementById("themeIcon").innerHTML=S.theme==="dark"
+    ? `<circle cx="10" cy="10" r="4" fill="currentColor"/>
+       <g stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+       <path d="M10 1v2M10 17v2M1 10h2M17 10h2M3.6 3.6l1.4 1.4M15 15l1.4 1.4M16.4 3.6L15 5M5 15l-1.4 1.4"/></g>`
+    : `<path d="M16 11.5A6.6 6.6 0 0 1 8.5 4a6.8 6.8 0 1 0 7.5 7.5z" fill="currentColor"/>`;
+}
+
+/* =====================================================================
+   DATE PICKER
+   ===================================================================== */
+function buildPresets(){
+  const el=document.getElementById("dpPresets");
+  el.innerHTML=[{id:"custom",l:"Aangepast"}].concat(PRESETS)
+    .map(p=>`<button class="dp-preset" data-p="${p.id}">${p.l}</button>`).join("");
+  el.querySelectorAll(".dp-preset").forEach(b=>{
+    b.addEventListener("click",()=>{
+      const id=b.dataset.p;
+      if(id==="custom"){DRAFT.preset="custom";DRAFT.anchor=null;paintPicker();return;}
+      const [f,t]=rangeFor(id);
+      DRAFT.from=f;DRAFT.to=t;DRAFT.preset=id;DRAFT.anchor=null;
+      paintPicker();
+    });
+  });
+}
+
+function buildMonths(){
+  const el=document.getElementById("dpMonths");
+  let h="", cur=new Date(MIN_DATE.getFullYear(),MIN_DATE.getMonth(),1);
+  const last=new Date(TODAY.getFullYear(),TODAY.getMonth(),1);
+  while(cur<=last){
+    const y=cur.getFullYear(),m=cur.getMonth();
+    h+=`<div class="dp-mname" data-m="${y}-${m}">${NLMF[m]} ${y}</div><div class="dp-grid">`;
+    const first=new Date(y,m,1), lead=(first.getDay()+6)%7;
+    for(let i=0;i<lead;i++) h+=`<div class="dp-day blank"></div>`;
+    const dim=new Date(y,m+1,0).getDate();
+    for(let d=1;d<=dim;d++){
+      const dt=new Date(y,m,d), future=dnum(dt)>dnum(TODAY);
+      h+=`<button class="dp-day${future?" off":""}" ${future?"disabled":""}
+        data-d="${y}-${m}-${d}">${d}</button>`;
+    }
+    h+=`</div>`;
+    cur=new Date(y,m+1,1);
+  }
+  el.innerHTML=h;
+  el.querySelectorAll(".dp-day[data-d]").forEach(b=>{
+    b.addEventListener("click",()=>{
+      const [y,m,d]=b.dataset.d.split("-").map(Number);
+      const dt=new Date(y,m,d);
+      if(DRAFT.anchor===null){ DRAFT.anchor=dt; DRAFT.from=dt; DRAFT.to=dt; }
+      else {
+        if(dnum(dt)<dnum(DRAFT.anchor)){DRAFT.from=dt;DRAFT.to=DRAFT.anchor;}
+        else {DRAFT.from=DRAFT.anchor;DRAFT.to=dt;}
+        DRAFT.anchor=null;
+      }
+      DRAFT.preset=matchPreset(DRAFT.from,DRAFT.to);
+      paintPicker();
+    });
+  });
+}
+
+function paintPicker(){
+  document.getElementById("dpF").value=dlab(DRAFT.from);
+  document.getElementById("dpT").value=dlab(DRAFT.to);
+  document.getElementById("dpF").classList.toggle("active",DRAFT.anchor!==null);
+  document.getElementById("dpT").classList.toggle("active",DRAFT.anchor===null);
+  document.querySelectorAll(".dp-preset").forEach(b=>
+    b.classList.toggle("is-on",b.dataset.p===DRAFT.preset));
+  const a=dnum(DRAFT.from), z=dnum(DRAFT.to);
+  document.querySelectorAll(".dp-day[data-d]").forEach(b=>{
+    const [y,m,d]=b.dataset.d.split("-").map(Number);
+    const n=dnum(new Date(y,m,d));
+    b.classList.remove("mid","edge","s","e");
+    if(n===a||n===z){b.classList.add("edge"); if(n===a)b.classList.add("s"); if(n===z)b.classList.add("e");}
+    else if(n>a&&n<z) b.classList.add("mid");
+  });
+}
+
+function scrollToDraft(){
+  const el=document.getElementById("dpMonths");
+  const key=`${DRAFT.from.getFullYear()}-${DRAFT.from.getMonth()}`;
+  const h=el.querySelector(`.dp-mname[data-m="${key}"]`);
+  if(h) el.scrollTop=h.offsetTop-el.offsetTop-6;
+}
+
+function paintTrigger(){
+  document.getElementById("dpChip").textContent=presetLabel(S.preset);
+  document.getElementById("dpRange").textContent=rangeLabel(S.from,S.to);
+  document.getElementById("dpCmp").textContent=
+    S.compare ? "vs " + (S.bench==="prev"?"vorige periode":"vorig jaar") : "geen vergelijking";
+}
+
+function openPicker(){
+  DRAFT={from:new Date(S.from),to:new Date(S.to),preset:S.preset,anchor:null};
+  document.getElementById("dpSwitch").classList.toggle("on",S.compare);
+  document.getElementById("dpSwitch").setAttribute("aria-checked",String(S.compare));
+  document.getElementById("dpCmpSel").value=S.bench;
+  document.getElementById("dpCmpSel").disabled=!S.compare;
+  document.getElementById("dpPanel").classList.add("open");
+  document.getElementById("dpTrigger").setAttribute("aria-expanded","true");
+  paintPicker(); scrollToDraft();
+}
+function closePicker(){
+  document.getElementById("dpPanel").classList.remove("open");
+  document.getElementById("dpTrigger").setAttribute("aria-expanded","false");
+}
+
+/* =====================================================================
+   RENDER + EVENTS
+   ===================================================================== */
+function wireFlow(){
+  const svg=document.getElementById("flowSvg"),lg=document.getElementById("flowLegend");
+  if(!svg||!lg)return;
+  const on=k=>{svg.classList.add("dim");
+    svg.querySelectorAll(".ribbon").forEach(r=>r.classList.toggle("hot",r.dataset.ch===k));};
+  const off=()=>{svg.classList.remove("dim");
+    svg.querySelectorAll(".ribbon").forEach(r=>r.classList.remove("hot"));};
+  svg.querySelectorAll(".ribbon").forEach(r=>{
+    r.addEventListener("mouseenter",()=>on(r.dataset.ch));
+    r.addEventListener("mouseleave",off);});
+  lg.querySelectorAll(".lg").forEach(l=>{
+    l.addEventListener("mouseenter",()=>on(l.dataset.ch));
+    l.addEventListener("mouseleave",off);});
+}
+function wireTargets(){
+  document.querySelectorAll("input[data-t]").forEach(inp=>{
+    inp.addEventListener("change",()=>{
+      const v=parseFloat(inp.value); if(isNaN(v)||v<0)return;
+      TARGET_EDITS[S.client]=TARGET_EDITS[S.client]||{};
+      TARGET_EDITS[S.client][inp.dataset.t]=v; render();
+    });
+  });
+  const r=document.getElementById("resetT");
+  if(r) r.addEventListener("click",()=>{delete TARGET_EDITS[S.client];render();});
+  const sp=document.getElementById("swPoas");
+  if(sp) sp.addEventListener("click",()=>{S.poas=!S.poas;render();});
+  const stm=document.getElementById("swTheme");
+  if(stm) stm.addEventListener("click",()=>{S.theme=S.theme==="dark"?"light":"dark";applyTheme();render();});
+  document.querySelectorAll(".mod-row .sw:not(#swPoas):not(#swTheme)").forEach(b=>
+    b.addEventListener("click",()=>{const on=!b.classList.contains("on");
+      b.classList.toggle("on",on); b.setAttribute("aria-checked",String(on));}));
+}
+function render(){
+  const el=document.getElementById("page"),p=S.page;
+  el.innerHTML = p==="overview"?pageOverview()
+    : p==="lifecycle"?pageLifecycle()
+    : (p==="website"||p==="webshop")?pageWebsite()
+    : p.startsWith("ch:")?pagePlatform(p.slice(3))
+    : p==="targets"?pageTargets()
+    : p==="settings"?pageSettings()
+    : pageHealth();
+  document.querySelectorAll("#nav .nav-item, #navBottom .nav-item")
+    .forEach(b=>b.classList.toggle("is-active",b.dataset.page===p));
+  const title = p.startsWith("ch:") ? CH[p.slice(3)].name : (PAGE_TITLES[p]||"");
+  document.getElementById("crumb").innerHTML=`${esc(C().name)} <span style="opacity:.5">/</span> <b>${esc(title)}</b>`;
+  paintTrigger(); wireFlow(); wireTargets();
+}
+
+document.getElementById("themeBtn").addEventListener("click",()=>{
+  S.theme=S.theme==="dark"?"light":"dark"; applyTheme();
+});
+document.getElementById("dpTrigger").addEventListener("click",e=>{
+  e.stopPropagation();
+  document.getElementById("dpPanel").classList.contains("open") ? closePicker() : openPicker();
+});
+document.getElementById("dpPanel").addEventListener("click",e=>e.stopPropagation());
+document.addEventListener("click",closePicker);
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closePicker();});
+
+document.getElementById("dpSwitch").addEventListener("click",function(){
+  const on=!this.classList.contains("on");
+  this.classList.toggle("on",on);
+  this.setAttribute("aria-checked",String(on));
+  document.getElementById("dpCmpSel").disabled=!on;
+});
+document.getElementById("dpCancel").addEventListener("click",closePicker);
+document.getElementById("dpApply").addEventListener("click",()=>{
+  S.from=DRAFT.from; S.to=DRAFT.to; S.preset=DRAFT.preset;
+  S.compare=document.getElementById("dpSwitch").classList.contains("on");
+  S.bench=document.getElementById("dpCmpSel").value;
+  closePicker(); render();
+});
+
+/* boot */
+[S.from,S.to]=rangeFor("last30");
+applyTheme(); applyClient(); buildNav(); buildGeo(); buildPresets(); buildMonths(); render();
+</script>
+</body>
+</html>
