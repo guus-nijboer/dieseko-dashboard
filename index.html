@@ -780,6 +780,50 @@ table.dt tr.sect td::before{
 }
 </style>
 
+<style id="dieseko-acq-v6">
+/* Verkeersacquisitie: GA4-achtige lijngrafiek per bron */
+.acq{width:100%;height:auto;display:block}
+.acq-ax{font-size:10px;fill:var(--muted-2)}
+.acq-mo{font-size:10px;font-weight:700;fill:var(--muted);letter-spacing:.04em}
+.acq-grid{stroke:var(--line-soft);stroke-width:1}
+.acq-mline{stroke:var(--line);stroke-width:1;stroke-dasharray:2 3}
+.acq-tools{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.mini{padding:4px 9px;font-size:11px;font-weight:600;border:1px solid var(--line);
+  background:var(--surface-2);color:var(--muted);line-height:1.3}
+.mini:hover{color:var(--text);border-color:var(--muted-2)}
+.mini.on{background:var(--dieseko-red,#DD1742);border-color:var(--dieseko-red,#DD1742);color:#fff}
+.mini:focus-visible{outline:2px solid var(--dieseko-red,#DD1742);outline-offset:1px}
+.lg.tog{cursor:pointer;user-select:none}
+.lg.tog.off{opacity:.35}
+.lg.tog.off i{background:var(--muted-2)!important}
+</style>
+<style id="dieseko-viz-v5">
+/* Donut en funnel: vorm en typografie, kleuren komen uit het merkpalet */
+.donut-wrap{display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+.donut-svg{flex:0 0 152px}
+.donut-lg{flex:1;min-width:150px;display:flex;flex-direction:column;gap:10px}
+.donut-row{display:flex;align-items:baseline;gap:9px;font-size:12.5px}
+.donut-row i{width:9px;height:9px;border-radius:2px;flex:0 0 9px;align-self:center}
+.donut-row b{margin-left:auto;font-weight:700;font-variant-numeric:tabular-nums}
+.donut-row em{font-style:normal;color:var(--muted);font-size:11.5px}
+.donut-mid{font-size:16px;font-weight:800;letter-spacing:-.03em;fill:var(--text)}
+.donut-midsub{font-size:8.5px;font-weight:600;letter-spacing:.12em;fill:var(--muted)}
+.funnelsvg{width:100%;height:auto;display:block}
+.fn-name{font-size:12.5px;font-weight:600;fill:var(--text)}
+.fn-sub{font-size:9px;font-weight:600;letter-spacing:.1em;fill:var(--muted)}
+.fn-val{font-size:15px;font-weight:700;fill:var(--text);font-variant-numeric:tabular-nums}
+.fn-drop{font-size:10.5px;fill:var(--muted)}
+.fn-lost{font-size:10.5px;fill:var(--neg)}
+
+.donut-svg path{stroke:var(--surface);stroke-width:1.5}
+.donut-mid{fill:var(--text)}
+.donut-midsub{fill:var(--muted)}
+.fn-name{fill:var(--text)}
+.fn-sub{fill:var(--muted)}
+.fn-val{fill:var(--text)}
+.fn-drop{fill:var(--muted)}
+.fn-lost{fill:var(--neg)}
+</style>
 </head>
 <body>
 <div class="shell">
@@ -868,8 +912,11 @@ const CH = {
   tiktok:  {name:"TikTok Ads",       type:"paid",    color:"#E8837E", src:"TikTok Business API"},
   pinterest:{name:"Pinterest Ads",   type:"paid",    color:"#C2624F", src:"Pinterest Ads API"},
   seo:     {name:"Organisch zoeken", type:"organic", color:"#5E626A", src:"Search Console"},
+  direct:  {name:"Direct",           type:"other",   color:"#8A8E96", src:"GA4"},
+  referral:{name:"Referral",         type:"other",   color:"#ADB1B8", src:"GA4"},
+  social:  {name:"Organisch social", type:"other",   color:"#C7CACF", src:"GA4"},
   email:   {name:"E-mail",           type:"email",   color:"#F0997B", src:"ESP / CRM"},
-  direct:  {name:"Direct & referral",type:"direct",  color:"#6E6E78", src:"GA4"}
+  emailga4:{name:"E-mail",          type:"other",   color:"#F0997B", src:"GA4"}
 };
 
 /* =====================================================================
@@ -903,15 +950,21 @@ const CLIENTS = {
   dieseko:{
     name:"Dieseko Group", tag:"LEADGEN B2B · EU / US / APAC", initial:"D",
     accent:"#DD1742", goal:"leads",
-    channels:["google","seo"],
+    /* channels = alles wat GA4 rapporteert · managed = wat Dtch. Digitals aanstuurt */
+    channels:["google","seo","direct","referral","social","emailga4"],
+    managed:["google","seo"],
     data:{
-      google: {imp:524000, clk:16800, ses:15400, cnv:168, spend:24800, rev:0},
-      seo:    {imp:642000, clk:28400, ses:26900, cnv:246, spend:0,     rev:0}
+      google:  {imp:524000, clk:16800, ses:15400, cnv:168, spend:24800, rev:0},
+      seo:     {imp:642000, clk:28400, ses:26900, cnv:246, spend:0,     rev:0},
+      direct:  {imp:0,      clk:18200, ses:18200, cnv:184, spend:0,     rev:0},
+      referral:{imp:0,      clk:4800,  ses:4600,  cnv:52,  spend:0,     rev:0},
+      social:  {imp:96000,  clk:4100,  ses:3800,  cnv:21,  spend:0,     rev:0},
+      emailga4:{imp:0,      clk:2600,  ses:2400,  cnv:34,  spend:0,     rev:0}
     },
     deltas:{prev:{ses:4.6,cnv:8.2,rev:0,cpa:-3.4,roas:0,cr:3.1},
             yoy:{ses:16.8,cnv:21.4,rev:0,cpa:-9.6,roas:0,cr:5.8}},
     margin:0.28,
-    targets:{ses:46000, cnv:460, macro:275, mql:100, sql:42, deal:9, cpl:105, poas:1.9, cr:1.0, spend:26000},
+    targets:{ses:76000, cnv:760, macro:450, mql:168, sql:70, deal:15, cpl:70, poas:1.9, cr:1.0, spend:26000},
     lead:{mqlRate:.58, sqlRate:.41, dealRate:.22, dealValue:96000, cycleDays:118},
     queries:[
       ["dieseko",.05,10.2,1.0,0,"brand"],["vibratory hammer",.13,2.4,7.1,-2.8,"gen"],
@@ -940,6 +993,8 @@ const GEO=[
 const REGIONS={eu:"Europa",am:"Amerika",ap:"Azië-Pacific",ot:"Overig"};
 
 const DEVICES=[["Mobiel",.62],["Desktop",.32],["Tablet",.06]];
+/* Donut blijft binnen het merkpalet: één rood in drie dekkingen. */
+const DONUT_RED=["var(--dieseko-red)","color-mix(in srgb,var(--dieseko-red) 55%,transparent)","color-mix(in srgb,var(--dieseko-red) 26%,transparent)"];
 
 const ORGANIC_PAGES={
   ecom:[],
@@ -990,7 +1045,10 @@ const ROWS = {
   pinterest:[["Shopping — Catalogus",.38],["Idea Pins — Inspiratie",.24],["Prospecting — Interesses",.23],["Retargeting",.15]],
   seo:[["Productpagina's",.34],["Expertises & markets",.26],["Rentals",.22],["Homepage",.18]],
   email:[["Nieuwsbrief — Kwartaal",.38],["Nurture — Na RFQ",.26],["Service reminder",.22],["Beursuitnodiging",.14]],
-  direct:[["Direct",.58],["Referral — Dealers",.27],["Referral — Vakmedia",.15]]
+  direct:[["Direct",1.0]],
+  referral:[["Dealers & distributeurs",.44],["Vakmedia & platforms",.33],["Branche-organisaties",.23]],
+  social:[["LinkedIn — organisch",.71],["YouTube",.19],["Overig",.10]],
+  emailga4:[["Nieuwsbrief",.46],["Nurture na aanvraag",.29],["Beursuitnodiging",.25]]
 };
 const BREAKDOWN = {
   google:[["Search",.62],["Performance Max",.18],["Display & video",.13],["YouTube",.07]],
@@ -1000,7 +1058,10 @@ const BREAKDOWN = {
   pinterest:[["Home feed",.52],["Zoekresultaten",.31],["Gerelateerde pins",.17]],
   seo:[["Mobiel",.58],["Desktop",.36],["Tablet",.06]],
   email:[["Mobiel",.64],["Desktop",.31],["Webmail",.05]],
-  direct:[["Direct",.58],["Dealers",.27],["Vakmedia",.15]]
+  direct:[["Mobiel",.44],["Desktop",.50],["Tablet",.06]],
+  referral:[["Mobiel",.39],["Desktop",.55],["Tablet",.06]],
+  social:[["Mobiel",.78],["Desktop",.20],["Tablet",.02]],
+  emailga4:[["Mobiel",.61],["Desktop",.35],["Webmail",.04]]
 };
 
 /* =====================================================================
@@ -1009,7 +1070,7 @@ const BREAKDOWN = {
 const TODAY = new Date(2026,7,24);
 const MIN_DATE = new Date(2025,0,1);
 let S = {client:ACTIVE_CLIENT, page:"overview", theme:"light",
-         preset:"last30", from:null, to:null, compare:true, bench:"prev", poas:false, geo:"all"};
+         preset:"last30", from:null, to:null, compare:true, bench:"prev", poas:false, geo:"all", acqMetric:"ses", acqHidden:{}};
 let DRAFT = {from:null, to:null, preset:"last30", anchor:null};
 
 const nf=new Intl.NumberFormat("nl-NL");
@@ -1160,25 +1221,67 @@ function barList(items,color,unit){
       <span style="width:${(i[1]/max*100).toFixed(0)}%;background:${color}"></span></div>
     <div class="bd-val">${unit==="pct"?pct(i[1]*100):fmtK(i[1])}</div></div></div>`).join("")}</div>`;
 }
-function funnelSteps(steps,color){
-  const max=steps[0].v||1; let h=`<div class="fsteps">`;
+
+/* ---- donut voor verdelingen met weinig categorieën ---- */
+function donut(items, colors, midSub){
+  const total=items.reduce((a,i)=>a+i[1],0)||1;
+  const R=62,r=40,cx=76,cy=76;
+  let a0=-Math.PI/2, paths="";
+  items.forEach((it,i)=>{
+    const frac=it[1]/total, a1=a0+frac*Math.PI*2, big=frac>.5?1:0;
+    const p=(rad,ang)=>[(cx+rad*Math.cos(ang)).toFixed(2),(cy+rad*Math.sin(ang)).toFixed(2)];
+    const [x0,y0]=p(R,a0),[x1,y1]=p(R,a1),[xi1,yi1]=p(r,a1),[xi0,yi0]=p(r,a0);
+    paths+=`<path d="M${x0},${y0} A${R},${R} 0 ${big} 1 ${x1},${y1} L${xi1},${yi1} A${r},${r} 0 ${big} 0 ${xi0},${yi0} Z" fill="${colors[i%colors.length]}"/>`;
+    a0=a1;
+  });
+  const top=items.slice().sort((a,b)=>b[1]-a[1])[0];
+  const svg=`<svg class="donut-svg" width="152" height="152" viewBox="0 0 152 152" role="img"
+    aria-label="Verdeling per categorie">${paths}
+    <text class="donut-mid" x="76" y="74" text-anchor="middle">${pct(top[1]/total*100)}</text>
+    <text class="donut-midsub" x="76" y="89" text-anchor="middle">${esc((midSub||top[0]).toUpperCase())}</text></svg>`;
+  const legend=items.map((it,i)=>`<div class="donut-row">
+    <i style="background:${colors[i%colors.length]}"></i>
+    <span>${esc(it[0])}${it[2]?` <em>${esc(it[2])}</em>`:""}</span>
+    <b>${pct(it[1]/total*100)}</b></div>`).join("");
+  return `<div class="donut-wrap">${svg}<div class="donut-lg">${legend}</div></div>`;
+}
+
+/* ---- echte funnelvorm; breedte is logaritmisch geschaald ---- */
+function funnelChart(steps, accent){
+  accent="var(--dieseko-red)";
+  const n=steps.length, vals=steps.map(s=>Math.max(s.v,1));
+  const lmax=Math.log(Math.max(...vals)), lmin=Math.log(Math.min(...vals));
+  const WMAX=330, WMIN=52;
+  const w=v=>lmax===lmin?WMAX:WMIN+((Math.log(v)-lmin)/(lmax-lmin))*(WMAX-WMIN);
+  const H=52, GAP=5, TOP=8, cx=356, LEFT=176, RIGHT=536;
+  const height=TOP+n*H+(n-1)*GAP+8;
+  let g=`<svg class="funnelsvg" viewBox="0 0 760 ${height}" role="img"
+    aria-label="Funnel van ${esc(steps[0].n)} naar ${esc(steps[n-1].n)}">`;
   steps.forEach((s,i)=>{
-    h+=`<div class="fstep"><div class="fstep-n">${esc(s.n)}<em>${esc(s.s||"")}</em></div>
-      <div class="fstep-bar"><span style="width:${Math.max(s.v/max*100,1.2).toFixed(1)}%;background:${color}"></span></div>
-      <div class="fstep-v">${fmt(s.v)}</div></div>`;
-    if(i<steps.length-1){
-      const r=steps[i+1].v/Math.max(s.v,.0001)*100;
-      h+=`<div class="fdrop"><div class="fdrop-in">↳ <b>${r<10?r.toFixed(2).replace(".",","):r.toFixed(1).replace(".",",")}%</b>
-        gaat door · <u>${fmt(s.v-steps[i+1].v)} valt af</u></div></div>`;
+    const yt=TOP+i*(H+GAP), yb=yt+H;
+    const wt=w(vals[i]), wb=i<n-1?w(vals[i+1]):wt*.7;
+    const op=(.34+(i/Math.max(n-1,1))*.66).toFixed(2);
+    g+=`<polygon points="${cx-wt/2},${yt} ${cx+wt/2},${yt} ${cx+wb/2},${yb} ${cx-wb/2},${yb}"
+      fill="${accent}" opacity="${op}"/>`;
+    g+=`<text class="fn-name" x="${LEFT}" y="${yt+(s.s?23:30)}" text-anchor="end">${esc(s.n)}</text>`;
+    if(s.s) g+=`<text class="fn-sub" x="${LEFT}" y="${yt+37}" text-anchor="end">${esc(s.s.toUpperCase())}</text>`;
+    g+=`<text class="fn-val" x="${RIGHT+20}" y="${yt+(i<n-1?24:31)}">${fmt(s.v)}</text>`;
+    if(i<n-1){
+      const rr=steps[i+1].v/Math.max(s.v,.0001)*100;
+      g+=`<text class="fn-drop" x="${RIGHT+20}" y="${yt+40}">${rr<10?rr.toFixed(2).replace(".",","):rr.toFixed(1).replace(".",",")}% door</text>`;
+      g+=`<text class="fn-lost" x="${RIGHT+120}" y="${yt+40}">−${fmt(s.v-steps[i+1].v)}</text>`;
     }
   });
-  return h+`</div>`;
+  return g+`</svg>`;
 }
+
 function flow(){
   const chs=C().channels;
   const stages=[{key:"imp",label:"VERTONINGEN"},{key:"clk",label:"KLIKS"},
                 {key:"ses",label:"SESSIES"},{key:"cnv",label:C().goal==="ecom"?"TRANSACTIES":"LEADS"}];
-  const W=940,H=320,top=54,bot=H-14,colW=11,gap=5,colX=[46,340,634,W-colW-46],geo={};
+  const W=520,H=286,top=66,bot=H-10,colW=9,gap=4;
+  const step=(W-colW-8)/3, colX=[8,8+step,8+step*2,W-colW];
+  const geo={};
   stages.forEach((st,si)=>{
     const vals=chs.map(k=>chData(k)[st.key]);
     const total=vals.reduce((a,b)=>a+b,0)||1;
@@ -1190,10 +1293,15 @@ function flow(){
   let svg=`<svg class="flow" id="flowSvg" viewBox="0 0 ${W} ${H}" role="img"
     aria-label="Doorstroom van vertoningen naar conversies per kanaal">`;
   stages.forEach((st,si)=>{
-    svg+=`<text class="flow-stage" x="${colX[si]}" y="18">${st.label}</text>`;
-    svg+=`<text class="flow-total" x="${colX[si]}" y="38">${st.key==="cnv"?fmt(st.total):fmtK(st.total)}</text>`;
-    if(si>0){const r=stages[si-1].total?st.total/stages[si-1].total*100:0;
-      svg+=`<text class="flow-step" x="${colX[si]-28}" y="38" text-anchor="end">${r<10?r.toFixed(2):r.toFixed(1)}%</text>`;}
+    const last=si===stages.length-1;
+    const anchor=last?"end":"start", tx=last?colX[si]+colW:colX[si];
+    svg+=`<text class="flow-stage" x="${tx}" y="18" text-anchor="${anchor}">${st.label}</text>`;
+    svg+=`<text class="flow-total" x="${tx}" y="40" text-anchor="${anchor}">${st.key==="cnv"?fmt(st.total):fmtK(st.total)}</text>`;
+    if(si>0){
+      const r=stages[si-1].total?st.total/stages[si-1].total*100:0;
+      const mid=(colX[si-1]+colW+colX[si])/2;
+      svg+=`<text class="flow-step" x="${mid.toFixed(1)}" y="56" text-anchor="middle">${r<10?r.toFixed(2):r.toFixed(1)}%</text>`;
+    }
   });
   chs.forEach(k=>{
     const g=geo[k],col=CH[k].color;
@@ -1211,22 +1319,145 @@ function flow(){
     <b>${(chData(k).cnv/(t.cnv||1)*100).toFixed(0)}%</b></span>`).join("");
   return svg+`<div class="flow-legend" id="flowLegend">${legend}</div>`;
 }
+/* ---- gedeelde tijdas: posities en maandgrenzen ---- */
+function xOfDate(d,pad,W){
+  const t0=S.from.getTime(), t1=S.to.getTime();
+  const f=(t1===t0)?0:(d.getTime()-t0)/(t1-t0);
+  return pad.l+f*(W-pad.l-pad.r);
+}
+function monthMarks(){
+  const out=[]; let d=new Date(S.from.getFullYear(),S.from.getMonth(),1);
+  if(d<S.from) d=new Date(S.from.getFullYear(),S.from.getMonth()+1,1);
+  while(d<=S.to){ out.push(new Date(d)); d=new Date(d.getFullYear(),d.getMonth()+1,1); }
+  return out;
+}
+/* Bij een korte periode zijn er geen maandgrenzen; val dan terug op weekmarkeringen. */
+function timeTicks(){
+  const ms=monthMarks().map(d=>({d,label:NLM[d.getMonth()]+(d.getMonth()===0?" "+d.getFullYear():""),major:true}));
+  if(ms.length>=2) return ms;
+  /* Korte periode: dagmarkeringen, maar een maandgrens blijft altijd zichtbaar. */
+  const out=[]; const step=days()<=14?2:7;
+  for(let i=0;i<days();i+=step){
+    const d=new Date(S.from); d.setDate(S.from.getDate()+i);
+    if(ms.some(m=>Math.abs(m.d-d)<2*86400000)) continue;
+    out.push({d,label:dshort(d),major:false});
+  }
+  return out.concat(ms);
+}
+function axisSvg(pad,W,H){
+  let g="";
+  timeTicks().forEach(t=>{
+    const x=xOfDate(t.d,pad,W);
+    if(x<pad.l-1||x>W-pad.r+1) return;
+    if(t.major) g+=`<line class="acq-mline" x1="${x.toFixed(1)}" y1="${pad.t}" x2="${x.toFixed(1)}" y2="${H-pad.b}"/>`;
+    g+=`<text class="${t.major?"acq-mo":"acq-ax"}" x="${x.toFixed(1)}" y="${H-pad.b+15}"
+      text-anchor="${t.major?"start":"middle"}">${t.label}</text>`;
+  });
+  return g;
+}
+
+/* ---- dagelijkse reeks per kanaal, opgeteld gelijk aan de periodetotalen ---- */
+function dailySeries(metric){
+  const chs=C().channels, n=days(), out=[];
+  const base={}; chs.forEach(k=>base[k]=chData(k)[metric]/n);
+  for(let i=0;i<n;i++){
+    const d=new Date(S.from); d.setDate(S.from.getDate()+i);
+    const dow=d.getDay();
+    const week=(dow===0||dow===6)?.38:1.15;          /* B2B: weekend is stil */
+    const row={d,v:{},tot:0};
+    chs.forEach((k,ci)=>{
+      const f=week*(1+wob(i*7+ci*31,.24))*(1+Math.sin(i/9+ci*1.7)*.09);
+      row.v[k]=Math.max(base[k]*f,0);
+    });
+    out.push(row);
+  }
+  chs.forEach(k=>{
+    const sum=out.reduce((a,r)=>a+r.v[k],0)||1, target=chData(k)[metric];
+    out.forEach(r=>{r.v[k]=r.v[k]/sum*target;});
+  });
+  out.forEach(r=>r.tot=chs.reduce((a,k)=>a+r.v[k],0));
+  return out;
+}
+
+const ACQ_METRICS=[["ses","Sessies",fmtK],["cnv","Conversies",fmt],
+                   ["imp","Vertoningen",fmtK],["spend","Kosten",curK]];
+
+function acqChart(){
+  const chs=C().channels;
+  const met=ACQ_METRICS.find(m=>m[0]===S.acqMetric)||ACQ_METRICS[0];
+  const rows=dailySeries(met[0]);
+  const hidden=S.acqHidden||{};
+  const shown=chs.filter(k=>!hidden[k]);
+  const showTotal=!hidden.__total;
+  const W=1160,H=320,pad={l:52,r:14,t:14,b:40};
+  const peak=Math.max(
+    showTotal?Math.max(...rows.map(r=>shown.reduce((a,k)=>a+r.v[k],0))):0,
+    ...shown.map(k=>Math.max(...rows.map(r=>r.v[k]))),0.0001);
+  const max=peak*1.12;
+  const Y=v=>H-pad.b-(v/max)*(H-pad.t-pad.b);
+  const X=r=>xOfDate(r.d,pad,W);
+
+  let g=`<svg class="acq" viewBox="0 0 ${W} ${H}" role="img"
+    aria-label="${esc(met[1])} per kanaal over de gekozen periode">`;
+  for(let i=0;i<=4;i++){
+    const y=pad.t+(i/4)*(H-pad.t-pad.b), v=max*(1-i/4);
+    g+=`<line class="acq-grid" x1="${pad.l}" y1="${y.toFixed(1)}" x2="${W-pad.r}" y2="${y.toFixed(1)}"/>`;
+    g+=`<text class="acq-ax" x="${pad.l-8}" y="${(y+3.5).toFixed(1)}" text-anchor="end">${met[2](v)}</text>`;
+  }
+  g+=axisSvg(pad,W,H);
+
+  if(showTotal&&shown.length){
+    const pts=rows.map(r=>`${X(r).toFixed(1)},${Y(shown.reduce((a,k)=>a+r.v[k],0)).toFixed(1)}`);
+    g+=`<path d="M${pts.join(" L")} L${X(rows[rows.length-1]).toFixed(1)},${H-pad.b} L${X(rows[0]).toFixed(1)},${H-pad.b} Z"
+      fill="var(--dieseko-red,#DD1742)" opacity=".07"/>`;
+    g+=`<polyline points="${pts.join(" ")}" fill="none" stroke="var(--dieseko-red,#DD1742)"
+      stroke-width="1.6" stroke-dasharray="4 3" stroke-linejoin="round"/>`;
+  }
+  shown.forEach(k=>{
+    const pts=rows.map(r=>`${X(r).toFixed(1)},${Y(r.v[k]).toFixed(1)}`).join(" ");
+    g+=`<polyline points="${pts}" fill="none" stroke="${CH[k].color}" stroke-width="1.8"
+      stroke-linejoin="round" stroke-linecap="round"/>`;
+  });
+  /* onzichtbare kolommen met een native tooltip per dag */
+  const colW=(W-pad.l-pad.r)/Math.max(rows.length,1);
+  rows.forEach(r=>{
+    const tip=[dlab(r.d)].concat(shown.map(k=>`${CH[k].name}: ${met[2](r.v[k])}`))
+      .concat(showTotal&&shown.length?[`Totaal: ${met[2](shown.reduce((a,k)=>a+r.v[k],0))}`]:[]).join("\n");
+    g+=`<rect x="${(X(r)-colW/2).toFixed(1)}" y="${pad.t}" width="${Math.max(colW,2).toFixed(1)}"
+      height="${H-pad.t-pad.b}" fill="transparent"><title>${esc(tip)}</title></rect>`;
+  });
+  g+=`</svg>`;
+
+  const legend=`<div class="flow-legend">
+    <span class="lg tog ${showTotal?"":"off"}" data-acq-ch="__total">
+      <i style="background:var(--dieseko-red,#DD1742)"></i>Totaal</span>
+    ${chs.map(k=>`<span class="lg tog ${hidden[k]?"off":""}" data-acq-ch="${k}">
+      <i style="background:${CH[k].color}"></i>${CH[k].name}
+      <b>${met[2](chData(k)[met[0]])}</b></span>`).join("")}</div>`;
+  return g+legend;
+}
+
 function trend(seed,cA,cB,labA,labB){
-  const W=560,H=180,pad={l:8,r:8,t:20,b:22},n=14,a=[],b=[];
-  for(let i=0;i<n;i++){a.push(50+i*2.4+wob(seed+i,11));b.push(38+i*3.1+wob(seed+i+50,14));}
+  const W=560,H=196,pad={l:8,r:8,t:18,b:34};
+  const n=Math.min(Math.max(days(),8),40),a=[],b=[],ds=[];
+  for(let i=0;i<n;i++){
+    a.push(50+i*(2.4*14/n)+wob(seed+i,11));
+    b.push(38+i*(3.1*14/n)+wob(seed+i+50,14));
+    const d=new Date(S.from); d.setDate(S.from.getDate()+Math.round(i*(days()-1)/(n-1))); ds.push(d);
+  }
   const maxA=Math.max(...a),maxB=Math.max(...b);
-  const X=i=>pad.l+(i/(n-1))*(W-pad.l-pad.r);
+  const X=i=>xOfDate(ds[i],pad,W);
   const YA=v=>H-pad.b-(v/maxA)*(H-pad.t-pad.b);
   const YB=v=>H-pad.b-(v/maxB)*(H-pad.t-pad.b);
   let g=`<svg class="trend" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(labA)} en ${esc(labB)}">`;
   for(let i=0;i<=3;i++){const y=pad.t+(i/3)*(H-pad.t-pad.b);
     g+=`<line x1="${pad.l}" y1="${y}" x2="${W-pad.r}" y2="${y}" stroke="var(--line-soft)" stroke-width="1"/>`;}
+  g+=axisSvg(pad,W,H);
   g+=`<path d="M${b.map((v,i)=>`${X(i)},${YB(v)}`).join(" L")} L${X(n-1)},${H-pad.b} L${X(0)},${H-pad.b} Z" fill="${cB}" opacity=".10"/>`;
   g+=`<polyline points="${b.map((v,i)=>X(i)+","+YB(v)).join(" ")}" fill="none" stroke="${cB}" stroke-width="1.6" stroke-linejoin="round"/>`;
   g+=`<polyline points="${a.map((v,i)=>X(i)+","+YA(v)).join(" ")}" fill="none" stroke="${cA}" stroke-width="2" stroke-linejoin="round"/>`;
   g+=`<circle cx="${X(n-1)}" cy="${YA(a[n-1])}" r="3.2" fill="${cA}"/>`;
-  g+=`<text class="tr-axis" x="${pad.l}" y="${H-6}">${dshort(S.from)}</text>`;
-  g+=`<text class="tr-axis" x="${W-pad.r}" y="${H-6}" text-anchor="end">${dshort(S.to)}</text></svg>
+  g+=`</svg>
   <div class="flow-legend" style="margin-top:8px;padding-top:8px">
     <span class="lg"><i style="background:${cA}"></i>${esc(labA)}</span>
     <span class="lg"><i style="background:${cB}"></i>${esc(labB)}</span></div>`;
@@ -1270,7 +1501,9 @@ function pageOverview(){
     const x=chData(k),sh=x.cnv/Math.max(t.cnv,1);
     const kcpa=x.spend?x.spend/Math.max(x.cnv,1):null,kroas=x.spend?x.rev/x.spend:null;
     const kp=poasOf(k);
-    return `<tr><td><span class="namecell"><i style="background:${CH[k].color}"></i>${CH[k].name}</span></td>
+    const man=(c.managed||c.channels).includes(k);
+    return `<tr><td><span class="namecell"><i style="background:${CH[k].color}"></i>${CH[k].name}
+      ${man?'<span class="tag brand">beheerd</span>':""}</span></td>
       <td>${fmtK(x.ses)}</td><td>${fmt(x.cnv)}</td>
       <td><span class="minibar"><span style="width:${(sh*100).toFixed(0)}%;background:${CH[k].color}"></span></span>${(sh*100).toFixed(0)}%</td>
       <td>${x.spend?cur(x.spend):"—"}</td>
@@ -1281,9 +1514,22 @@ function pageOverview(){
   return `
   <div class="actionbar"><button class="btn btn-primary">Exporteer PDF</button></div>
   <div class="kpis ${kcls(kpis.length)}">${kpis.map(kpiTile).join("")}</div>
-  <section class="panel mb">
-    <div class="panel-head"><h2>Van vertoning naar conversie</h2><span class="eyebrow">Beweeg over een kanaal</span></div>
-    <div class="panel-body">${flow()}</div></section>
+  <div class="grid37">
+    <section class="panel">
+      <div class="panel-head"><h2>Verkeersacquisitie</h2>
+        <span class="acq-tools">
+          ${ACQ_METRICS.map(m=>`<button class="mini ${S.acqMetric===m[0]?"on":""}"
+            data-acq-metric="${m[0]}">${m[1]}</button>`).join("")}
+        </span></div>
+      <div class="panel-body">${acqChart()}
+        <p style="color:var(--muted);font-size:12.5px;margin:14px 0 0">
+        Klik een kanaal in de legenda aan of uit om te vergelijken. De stippellijn is het totaal van de
+        zichtbare kanalen. Verticale stippellijnen markeren maandgrenzen.</p></div></section>
+    <section class="panel">
+      <div class="panel-head"><h2>Van vertoning naar conversie</h2>
+        <span class="eyebrow">Beweeg over een kanaal</span></div>
+      <div class="panel-body">${flow()}</div></section>
+  </div>
   <div class="grid37">
     <section class="panel"><div class="panel-head"><h2>Kanaalprestatie</h2>
       <span class="eyebrow">${ecom?"ROAS":"Kosten per lead"}</span></div>
@@ -1291,15 +1537,18 @@ function pageOverview(){
         <thead><tr><th>Kanaal</th><th>Sessies</th><th>${ecom?"Transacties":"Leads"}</th>
         <th>Aandeel</th><th>Kosten</th><th>${ecom?"ROAS":"CPL"}</th>
         ${S.poas?"<th>Brutowinst</th><th>POAS</th>":""}</tr></thead>
-        <tbody>${rows}</tbody></table></div></section>
+        <tbody>${rows}</tbody></table>
+        <p style="color:var(--muted);font-size:12.5px;margin:14px 0 0">
+        Alle kanalen komen uit GA4. Alleen bij de beheerde kanalen zijn er mediakosten,
+        dus bij de rest staat een streepje in de kostenkolommen.</p></div></section>
     <section class="panel"><div class="panel-head"><h2>Apparaat</h2><span class="eyebrow">Aandeel sessies</span></div>
-      <div class="panel-body">${barList(DEVICES.map(v=>[v[0],v[1],fmtK(t.ses*v[1])+" sessies"]),"#26CBCA","pct")}</div></section>
+      <div class="panel-body">${donut(DEVICES.map(v=>[v[0],v[1],fmtK(t.ses*v[1])+" sessies"]),DONUT_RED,"mobiel")}</div></section>
   </div>
   <section class="panel mb"><div class="panel-head"><h2>Landen</h2>
-    <span class="eyebrow">Index = conversieratio tegen het gemiddelde</span></div>
+    <span class="eyebrow">Sessies en conversies per markt</span></div>
     <div class="panel-body"><table class="dt">
       <thead><tr><th>Land</th><th>Regio</th><th>Sessies</th><th>Aandeel</th>
-      <th>Conversies</th><th>Conv.index</th></tr></thead>
+      <th>Conversies</th><th>Conv.ratio</th></tr></thead>
       <tbody>${(()=>{
         const all=withAllGeo(()=>totals());
         const visibleCountryCodes=["NL","US","AU","PL"];
@@ -1311,7 +1560,7 @@ function pageOverview(){
           <td>${fmtK(all.ses*x.s)}</td>
           <td><span class="minibar"><span style="width:${(x.s/mx*100).toFixed(0)}%"></span></span>${pct(x.s*100)}</td>
           <td>${fmt(all.cnv*x.s*x.ci)}</td>
-          <td class="${x.ci>1.05?"up-s":x.ci<.75?"down-s":""}">${x.ci.toFixed(2).replace(".",",")}x</td></tr>`).join("");
+          <td>${pct((all.cnv*x.s*x.ci)/Math.max(all.ses*x.s,1)*100)}</td></tr>`).join("");
       })()}</tbody></table></div></section>
   ${ecom?"":leadgenBlocks()}
   <div class="grid2">
@@ -1353,12 +1602,12 @@ function leadgenBlocks(){
   const formRows=forms.map(f=>{
     const st=t.cnv*2.4*f[1],sub=st*f[2];
     return `<tr><td>${esc(f[0])}</td><td>${fmt(st)}</td><td>${fmt(sub)}</td>
-      <td>${pct(f[2]*100)}</td><td class="${f[2]>.5?"up-s":"down-s"}">${f[2]>.5?"gezond":"uitval hoog"}</td></tr>`;
+      <td>${pct(f[2]*100)}</td></tr>`;
   }).join("");
   return `
   <div class="grid37">
     <section class="panel"><div class="panel-head"><h2>Leadfunnel</h2><span class="eyebrow">GA4 + CRM</span></div>
-      <div class="panel-body">${funnelSteps(steps,c.accent)}
+      <div class="panel-body">${funnelChart(steps,c.accent)}
       <p style="color:var(--muted);font-size:12.5px;margin:16px 0 0">
       Tussen aanvragen en CRM valt <strong style="color:var(--text)">${fmt(macro-crm)}</strong> weg:
       telefoon- en e-mailklikken worden wel gemeten maar nergens geregistreerd.
@@ -1367,14 +1616,16 @@ function leadgenBlocks(){
       Kosten per klant: ${cur(cpd)}.${S.poas?` Brutowinst: <strong style="color:var(--text)">${curK(totalProfit())}</strong>.`:""}</p></div></section>
     <section class="panel"><div class="panel-head"><h2>Formulieren</h2><span class="eyebrow">Start versus inzending</span></div>
       <div class="panel-body"><table class="dt">
-        <thead><tr><th>Formulier</th><th>Gestart</th><th>Verstuurd</th><th>Afronding</th><th>Status</th></tr></thead>
+        <thead><tr><th>Formulier</th><th>Gestart</th><th>Verstuurd</th><th>Afronding</th></tr></thead>
         <tbody>${formRows}</tbody></table></div></section>
   </div>
   <section class="panel mb"><div class="panel-head"><h2>Aanvraagkwaliteit per kanaal</h2><span class="eyebrow">Gesorteerd op klanten</span></div>
     <div class="panel-body"><table class="dt">
       <thead><tr><th>Kanaal</th><th>Aanvragen</th><th>MQL</th><th>MQL-ratio</th><th>Klanten</th>
       <th>Kosten / aanvraag</th><th>Kosten / klant</th>${S.poas?"<th>POAS</th>":""}</tr></thead>
-      <tbody>${srcRows}</tbody></table></div></section>
+      <tbody>${srcRows}</tbody></table>
+      <p style="color:var(--muted);font-size:12.5px;margin:14px 0 0">Het kanaal met de laagste kosten per aanvraag
+      is zelden ook het kanaal met de laagste kosten per klant. Stuur op de rechterkolom.</p></div></section>
   `;
 }
 
@@ -1401,7 +1652,9 @@ function searchTerms(k){
     <section class="panel"><div class="panel-head"><h2>Kansen</h2><span class="eyebrow">Positie 8 en lager</span></div>
       <div class="panel-body"><table class="dt">
         <thead><tr><th>Zoekterm</th><th>Vert.</th><th>Pos.</th><th>CTR</th><th>Potentie</th></tr></thead>
-        <tbody>${opps}</tbody></table></div></section>
+        <tbody>${opps}</tbody></table>
+        <p style="color:var(--muted);font-size:12.5px;margin:14px 0 0">Termen met veel vertoningen buiten de top acht.
+        Hier levert stijgen de meeste extra kliks per uur werk op.</p></div></section>
   </div>`;
 }
 
@@ -1421,9 +1674,12 @@ function landingPages(){
       <div class="panel-body"><table class="dt">
         <thead><tr><th>Pagina</th><th>Sessies</th><th>Betrokkenheid</th>
         <th>${ecom?"Transacties":"Leads"}</th><th>Conv.ratio</th><th>Verschil</th></tr></thead>
-        <tbody>${rows}</tbody></table></div></section>
+        <tbody>${rows}</tbody></table>
+        <p style="color:var(--muted);font-size:12.5px;margin:14px 0 0">
+        Alle kanalen komen uit GA4. Alleen bij de beheerde kanalen zijn er mediakosten,
+        dus bij de rest staat een streepje in de kostenkolommen.</p></div></section>
     <section class="panel"><div class="panel-head"><h2>Apparaat</h2><span class="eyebrow">Organisch</span></div>
-      <div class="panel-body">${barList(DEVICES.map(v=>[v[0],v[1],fmtK(x.ses*v[1])+" sessies"]),"#7FD4C6","pct")}
+      <div class="panel-body">${donut(DEVICES.map(v=>[v[0],v[1],fmtK(x.ses*v[1])+" sessies"]),DONUT_RED,"mobiel")}
         <p style="color:var(--muted);font-size:12.5px;margin:16px 0 0">
         Organisch verkeer is doorgaans mobieler dan betaald verkeer. Weegt dat door in de conversieratio,
         dan zit het probleem meestal in de pagina en niet in het kanaal.</p></div></section>
@@ -1515,9 +1771,7 @@ function pageWebsite(){
     const start=formBase*f[1]*2.6*(1+wob(i+3,.12));
     const sub=start*f[2];
     return `<tr><td>${esc(f[0])}</td><td>${fmtK(views)}</td><td>${fmt(start)}</td>
-      <td>${fmt(sub)}</td><td>${pct(f[2]*100)}</td>
-      <td><span class="pill ${f[2]>=.6?"on":f[2]>=.45?"near":"off"}">${
-        f[2]>=.6?"gezond":f[2]>=.45?"aandacht":"uitval hoog"}</span></td></tr>`;
+      <td>${fmt(sub)}</td><td>${pct(f[2]*100)}</td></tr>`;
   }).join("");
   const formTotal=forms.reduce((a,f,i)=>a+formBase*f[1]*2.6*(1+wob(i+3,.12))*f[2],0);
 
@@ -1558,13 +1812,14 @@ function pageWebsite(){
   <div class="kpis k6">${kpis.map(kpiTile).join("")}</div>
   <div class="grid37">
     <section class="panel"><div class="panel-head"><h2>Aankoopfunnel</h2>
-      <span class="eyebrow">GA4 e-commerce events</span></div>
-      <div class="panel-body">${funnelSteps(steps,c.accent)}${S.poas?`
+      <span class="eyebrow">GA4 events · breedte logaritmisch</span></div>
+      <div class="panel-body">${funnelChart(steps,c.accent)}${S.poas?`
       <p style="color:var(--muted);font-size:12.5px;margin:16px 0 0">Brutowinst deze periode:
       <strong style="color:var(--text)">${curK(totalProfit())}</strong> bij een gemiddelde marge van ${pct(c.margin*100)}.</p>`:""}</div></section>
     <section class="panel"><div class="panel-head"><h2>Omzet per apparaat</h2><span class="eyebrow">Aandeel</span></div>
-      <div class="panel-body">${barList([["Mobiel",t.rev*.47,fmt(t.cnv*.54)+" orders"],
-        ["Desktop",t.rev*.44,fmt(t.cnv*.38)+" orders"],["Tablet",t.rev*.09,fmt(t.cnv*.08)+" orders"]],c.accent)}
+      <div class="panel-body">${donut([["Mobiel",t.rev*.47,fmt(t.cnv*.54)+" orders"],
+        ["Desktop",t.rev*.44,fmt(t.cnv*.38)+" orders"],["Tablet",t.rev*.09,fmt(t.cnv*.08)+" orders"]],
+        DONUT_RED,"mobiel")}
         <p style="color:var(--muted);font-size:12.5px;margin:16px 0 0">Mobiel levert meer orders maar een lagere
         orderwaarde. Het verschil zit vooral in de checkout.</p></div></section>
   </div>
@@ -1578,8 +1833,11 @@ function pageWebsite(){
     <span class="eyebrow">Alle formulieren, ook zonder leadwaarde</span></div>
     <div class="panel-body"><table class="dt">
       <thead><tr><th>Formulier</th><th>Weergaven</th><th>Gestart</th><th>Verstuurd</th>
-      <th>Afronding</th><th>Status</th></tr></thead>
-      <tbody>${formRows}</tbody></table></div></section>
+      <th>Afronding</th></tr></thead>
+      <tbody>${formRows}</tbody></table>
+      <p style="color:var(--muted);font-size:12.5px;margin:14px 0 0">
+      Het gat tussen weergaven en gestart gaat over de plaatsing op de pagina.
+      Het gat tussen gestart en verstuurd gaat over het formulier zelf.</p></div></section>
   <div class="grid2">
     <section class="panel"><div class="panel-head"><h2>Betaalmethode</h2><span class="eyebrow">Aandeel omzet</span></div>
       <div class="panel-body">${barList(PAYMENTS.map(v=>[v[0],v[1],cur(t.rev*v[1])]),c.accent,"pct")}</div></section>
@@ -1590,7 +1848,10 @@ function pageWebsite(){
     <span class="eyebrow">WooCommerce · rechtstreeks uit de shop</span></div>
     <div class="panel-body"><table class="dt">
       <thead><tr><th>Status</th><th>Orders</th><th>Aandeel</th><th>Waarde</th><th>Gem. waarde</th></tr></thead>
-      <tbody>${statusRows}</tbody></table></div></section>
+      <tbody>${statusRows}</tbody></table>
+      <p style="color:var(--muted);font-size:12.5px;margin:14px 0 0">
+      Retour en geannuleerd zitten wel in de GA4-omzet maar niet in de werkelijke omzet.
+      Op het overzicht wordt met brutowaarde gerekend, hier zie je wat er netto overblijft.</p></div></section>
   <div class="grid2">
     <section class="panel"><div class="panel-head"><h2>Kortingscodes</h2>
       <span class="eyebrow">WooCommerce · gebruik en weggegeven marge</span></div>
@@ -1600,6 +1861,8 @@ function pageWebsite(){
           const n=t.cnv*.28*cp[1]*(1+wob(i+21,.12)), rv=t.rev*.28*cp[1]*(1+wob(i+23,.14));
           return `<tr><td>${esc(cp[0])}</td><td>${fmt(n)}</td><td>${cur(rv)}</td>
             <td>${pct(cp[2]*100)}</td><td class="down-s">${cur(rv*cp[2])}</td></tr>`;}).join("")}</tbody></table>
+        <p style="color:var(--muted);font-size:12.5px;margin:14px 0 0">
+        Kortingen gaan rechtstreeks van de marge af. Zet dit naast POAS om te zien wat een actie werkelijk oplevert.</p>
       </div></section>
     <section class="panel"><div class="panel-head"><h2>Nieuwe en terugkerende klanten</h2>
       <span class="eyebrow">WooCommerce · op klant-ID</span></div>
@@ -1643,13 +1906,20 @@ function pageWebsite(){
     <div class="panel-body"><table class="dt">
       <thead><tr><th>Conversie</th><th>Aantal</th><th>Aandeel</th><th>Type</th>
       <th>Registratie</th><th>Verschil</th></tr></thead>
-      <tbody>${convRows}</tbody></table></div></section>
+      <tbody>${convRows}</tbody></table>
+      <p style="color:var(--muted);font-size:12.5px;margin:14px 0 0">
+      Data sheet download en newsletter aanmelding zijn interessesignalen, geen aanvragen.
+      Ze tellen mee in het totaal maar niet in de funnel. Zonder dat onderscheid lijkt de
+      conversieratio hoger dan hij is.</p></div></section>
   <section class="panel mb"><div class="panel-head"><h2>Formulieren op de site</h2>
     <span class="eyebrow">Alle formulieren, ook zonder leadwaarde</span></div>
     <div class="panel-body"><table class="dt">
       <thead><tr><th>Formulier</th><th>Weergaven</th><th>Gestart</th><th>Verstuurd</th>
-      <th>Afronding</th><th>Status</th></tr></thead>
-      <tbody>${formRows}</tbody></table></div></section>
+      <th>Afronding</th></tr></thead>
+      <tbody>${formRows}</tbody></table>
+      <p style="color:var(--muted);font-size:12.5px;margin:14px 0 0">
+      Weergaven zijn pagina's waar het formulier in beeld kwam. Het verschil tussen weergaven en gestart
+      zegt iets over de plaatsing, het verschil tussen gestart en verstuurd over het formulier zelf.</p></div></section>
   <div class="grid37">
     <section class="panel"><div class="panel-head"><h2>Aanvragen per categorie</h2>
       <span class="eyebrow">Uit het formulierveld</span></div>
@@ -1733,7 +2003,7 @@ function pageHealth(){
   let list=[{n:"GA4",s:"live",t:"BigQuery export · 06:00"},
             {n:"Google Ads",s:"live",t:"Data Transfer · 05:30"},
             {n:"Search Console",s:"live",t:"Bulk export · 07:00"}];
-  c.channels.forEach(k=>{if(map[k])list.push({n:map[k],s:k==="email"?"live":"lag",
+  (c.managed||c.channels).forEach(k=>{if(map[k])list.push({n:map[k],s:k==="email"?"live":"lag",
     t:k==="email"?"API · 06:15":"Connector · 24u vertraging"});});
   list.push({n:c.goal==="leads"?"CRM":"WooCommerce",s:c.goal==="leads"?"off":"live",
     t:c.goal==="leads"?"Nog niet gekoppeld":"REST API · 06:30"});
@@ -1785,6 +2055,9 @@ function pageLifecycle(){
   const macro=t.cnv*MACRO_SHARE, crm=t.cnv*CRM_SHARE;
   const cv=n=>t.cnv*(CONVERSIONS.find(x=>x[0]===n)||[0,0])[1];
   const seo=chData("seo"), sea=chData("google");
+  const man=(c.managed||c.channels);
+  const onbetaald=c.channels.filter(k=>!man.includes(k))
+    .reduce((a,k)=>a+chData(k).ses,0);
   const avgPos=c.queries.reduce((a,q)=>a+q[3],0)/c.queries.length;
   const engaged=t.ses*.53;
   const returning=t.ses*.39;
@@ -1803,6 +2076,7 @@ function pageLifecycle(){
      rows:[["Sessies",t.ses,fmtK,"ses"],
            ["Kliks",t.clk,fmtK,"ses"],
            ["Nieuwe bezoekers",t.ses*.61,fmtK,"ses"],
+           ["Sessies buiten SEA en SEO",onbetaald,fmtK,"ses"],
            ["Kosten per klik",sea.spend/Math.max(sea.clk,1),cur,"cpa"]]},
     {k:"Engagement", col:"#7FD4C6", head:pct(engaged/Math.max(t.ses,1)*100), sub:"betrokken sessies", dk:"cr",
      rows:[["Betrokken sessies",engaged,fmtK,"ses"],
@@ -1848,7 +2122,11 @@ function pageLifecycle(){
     <div class="panel-body"><table class="dt">
       <thead><tr><th>Meetpunt</th><th>Deze periode</th><th>Vorige periode</th>
       <th>Vorig jaar</th><th>Verschil</th></tr></thead>
-      <tbody>${body}</tbody></table></div></section>
+      <tbody>${body}</tbody></table>
+      <p style="color:var(--muted);font-size:12.5px;margin:14px 0 0">
+      De kolom Verschil volgt de vergelijking die je bovenin kiest.
+      Awareness en Acquisition komen uit SEA en SEO, Conversion uit GA4 en Retention uit gedrag op de site.
+      Zodra het CRM gekoppeld is, kan Retention worden aangevuld met herhaalorders per account.</p></div></section>
   <div class="grid2">
     <section class="panel"><div class="panel-head"><h2>Bereik en verkeer</h2><span class="eyebrow">Trend</span></div>
       <div class="panel-body">${trend(53,"#5FB8D9","#26CBCA","Vertoningen","Sessies")}</div></section>
@@ -1923,7 +2201,7 @@ function buildNav(){
     <button class="nav-item" data-page="lifecycle"><span class="swatch" style="background:#5FB8D9"></span>Levenscyclus</button>
     <button class="nav-item" data-page="${ecom?"webshop":"website"}"><span class="swatch" style="background:#26CBCA"></span>${ecom?"Webshop":"Website"}</button>`;
   h+=`<div class="nav-group">Kanalen</div>`;
-  c.channels.forEach(k=>{h+=`<button class="nav-item" data-page="ch:${k}">
+  (c.managed||c.channels).forEach(k=>{h+=`<button class="nav-item" data-page="ch:${k}">
     <span class="swatch" style="background:${CH[k].color}"></span>${CH[k].name}</button>`;});
   nav.innerHTML=h;
 
@@ -2099,6 +2377,11 @@ function wireTargets(){
   });
   const r=document.getElementById("resetT");
   if(r) r.addEventListener("click",()=>{delete TARGET_EDITS[S.client];render();});
+  document.querySelectorAll("[data-acq-metric]").forEach(b=>
+    b.addEventListener("click",()=>{S.acqMetric=b.dataset.acqMetric;render();}));
+  document.querySelectorAll("[data-acq-ch]").forEach(b=>
+    b.addEventListener("click",()=>{const k=b.dataset.acqCh;
+      S.acqHidden[k]=!S.acqHidden[k]; render();}));
   const sp=document.getElementById("swPoas");
   if(sp) sp.addEventListener("click",()=>{S.poas=!S.poas;render();});
   const stm=document.getElementById("swTheme");
